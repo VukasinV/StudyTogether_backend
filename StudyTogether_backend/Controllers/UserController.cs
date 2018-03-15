@@ -18,12 +18,6 @@ namespace StudyTogether_backend.Controllers
     {
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
-        // GET: api/User
-        //public IQueryable<User> GetUser()
-        //{
-        //    return db.User;
-        //}
-
         // GET: api/User/5
         [ResponseType(typeof(User))]
         public IHttpActionResult GetUser(HttpRequestMessage message)
