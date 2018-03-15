@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="53152e0534794334902c0098f7dfc195" Name="Diagram1" ZoomLevel="72">
+        <EntityTypeShape EntityType="StudyTogetherModel.Lesson" Width="1.5" PointX="0.75" PointY="11.25" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Meeting" Width="1.5" PointX="3" PointY="11.25" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Participant" Width="1.5" PointX="5.25" PointY="6.25" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Profile" Width="1.5" PointX="3" PointY="7.125" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Review" Width="1.5" PointX="5.25" PointY="9.75" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Role" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Subject" Width="1.5" PointX="1.5" PointY="14.25" />
+        <EntityTypeShape EntityType="StudyTogetherModel.SubjectOrigin" Width="1.5" PointX="1.5" PointY="17.5" />
+        <EntityTypeShape EntityType="StudyTogetherModel.sysdiagrams" Width="1.5" PointX="5.75" PointY="1.125" />
+        <EntityTypeShape EntityType="StudyTogetherModel.User" Width="1.5" PointX="0.75" PointY="4" />
+        <EntityTypeShape EntityType="StudyTogetherModel.UserInRole" Width="1.5" PointX="3" PointY="3.5" />
+        <AssociationConnector Association="StudyTogetherModel.FK_Lesson_Subject" />
+        <AssociationConnector Association="StudyTogetherModel.FK_Meeting_Lesson" />
+        <AssociationConnector Association="StudyTogetherModel.FK_Participant_Meeting" />
+        <AssociationConnector Association="StudyTogetherModel.FK_Participant_Profile" />
+        <AssociationConnector Association="StudyTogetherModel.FK_Profile_User" />
+        <AssociationConnector Association="StudyTogetherModel.FK_Reviewed_Profile" />
+        <AssociationConnector Association="StudyTogetherModel.FK_Reviewer_Profile" />
+        <AssociationConnector Association="StudyTogetherModel.FK_UserInRole_Role" />
+        <AssociationConnector Association="StudyTogetherModel.FK_Subject_SubjectOrigin" />
+        <AssociationConnector Association="StudyTogetherModel.FK_UserInRole_User" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
