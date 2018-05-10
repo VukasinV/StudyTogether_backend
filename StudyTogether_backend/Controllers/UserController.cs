@@ -18,6 +18,7 @@ namespace StudyTogether_backend.Controllers
     {
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
+        // Get list of all users or login one user
         // GET: api/User/5
         [ResponseType(typeof(User))]
         public IHttpActionResult GetUser(HttpRequestMessage message)
@@ -25,7 +26,10 @@ namespace StudyTogether_backend.Controllers
 
             if (message.Headers.Contains("conformationNeeded") && message.Headers.GetValues("conformationNeeded").FirstOrDefault() == "false")
             {
-                var users = db.User;
+                var users = db.User.Select(x => new {
+                    x.Username
+                });
+
                 return Ok(users);
             }
 
@@ -33,7 +37,7 @@ namespace StudyTogether_backend.Controllers
                 return BadRequest();
 
 
-            var username = message.Headers.GetValues("username").FirstOrDefault();
+            var username = message.Headers.GetValues("username").FirstOrDefault();  
             var password = message.Headers.GetValues("password").FirstOrDefault();
 
             if (username == null || password == null)
@@ -50,9 +54,9 @@ namespace StudyTogether_backend.Controllers
             var HPassword = Convert.ToBase64String(HashPassword(password, salt));
             
             if (HPassword == db.User.Where(x => x.Username == username).Select(x => x.PasswordHash).Single())
-                return Ok();
+                return Ok("Logged In");
 
-            return NotFound();
+            return Unauthorized();
         }
 
         // PUT: api/User/5
@@ -90,6 +94,7 @@ namespace StudyTogether_backend.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        // Create new user
         // POST: api/User
         [ResponseType(typeof(User))]
         public IHttpActionResult PostUser(UserDTO userDTO)
@@ -114,13 +119,16 @@ namespace StudyTogether_backend.Controllers
                 Email = userDTO.Email,
                 EmailConfirmed = false,
                 DateCreated = DateTime.Now,
-                DateModified = null
+                DateModified = null,
+                RoleId = 2
             };
 
             db.User.Add(user);
+
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = user.UserId }, user);
+            //return CreatedAtRoute("DefaultApi", new { id = user.UserId }, user);
+            return Ok("User sueccessfuly created!");
         }
 
         // DELETE: api/User/5

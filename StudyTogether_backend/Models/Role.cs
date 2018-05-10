@@ -17,13 +17,13 @@ namespace StudyTogether_backend.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Role()
         {
-            this.UserInRole = new HashSet<UserInRole>();
+            this.User = new HashSet<User>();
         }
     
         public int RoleId { get; set; }
         public string RoleName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserInRole> UserInRole { get; set; }
+        public virtual ICollection<User> User { get; set; }
     }
 }

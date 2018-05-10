@@ -1,18 +1,25 @@
-﻿using System;
+﻿using StudyTogether_backend.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 
+
 namespace StudyTogether_backend.Controllers
 {
     public class TestController : ApiController
     {
+        private StudyTogetherEntities db = new StudyTogetherEntities();
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IHttpActionResult Get(HttpRequestMessage message)
         {
-            return new string[] { "value1", "value2", "value3" };
+
+            string test = "Neki tekst";
+
+            return Ok(test);
         }
 
         public string Get(int id)

@@ -11,7 +11,8 @@
           </Key>
           <Property Name="LessonId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="250" />
-          <Property Name="SubjectId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="SubjectId" Type="int" />
         </EntityType>
         <EntityType Name="Meeting">
           <Key>
@@ -20,7 +21,9 @@
           <Property Name="MeetingId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Location" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="StartsAt" Type="datetime" Nullable="false" />
-          <Property Name="LessonId" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Capacity" Type="int" Nullable="false" />
+          <Property Name="LessonId" Type="int" />
         </EntityType>
         <EntityType Name="Participant">
           <Key>
@@ -29,6 +32,7 @@
           </Key>
           <Property Name="ProfileId" Type="int" Nullable="false" />
           <Property Name="MeetingId" Type="int" Nullable="false" />
+          <Property Name="Owner" Type="bit" Nullable="false" />
           <Property Name="Canceled" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Profile">
@@ -95,18 +99,10 @@
           <Property Name="EmailConfirmed" Type="bit" Nullable="false" />
           <Property Name="DateCreated" Type="datetime" Nullable="false" />
           <Property Name="DateModified" Type="datetime" />
-        </EntityType>
-        <EntityType Name="UserInRole">
-          <Key>
-            <PropertyRef Name="UserId" />
-            <PropertyRef Name="RoleId" />
-          </Key>
-          <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="RoleId" Type="int" Nullable="false" />
-          <Property Name="DateAssigned" Type="datetime" Nullable="false" />
         </EntityType>
         <Association Name="FK_Lesson_Subject">
-          <End Role="Subject" Type="Self.Subject" Multiplicity="1" />
+          <End Role="Subject" Type="Self.Subject" Multiplicity="0..1" />
           <End Role="Lesson" Type="Self.Lesson" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subject">
@@ -114,18 +110,6 @@
             </Principal>
             <Dependent Role="Lesson">
               <PropertyRef Name="SubjectId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Meeting_Lesson">
-          <End Role="Lesson" Type="Self.Lesson" Multiplicity="1" />
-          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Lesson">
-              <PropertyRef Name="LessonId" />
-            </Principal>
-            <Dependent Role="Meeting">
-              <PropertyRef Name="LessonId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -201,27 +185,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserInRole_Role">
+        <Association Name="FK_User_Role">
           <End Role="Role" Type="Self.Role" Multiplicity="1" />
-          <End Role="UserInRole" Type="Self.UserInRole" Multiplicity="*" />
+          <End Role="User" Type="Self.User" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Role">
               <PropertyRef Name="RoleId" />
             </Principal>
-            <Dependent Role="UserInRole">
+            <Dependent Role="User">
               <PropertyRef Name="RoleId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UserInRole_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="UserInRole" Type="Self.UserInRole" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="UserInRole">
-              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -236,14 +208,9 @@
           <EntitySet Name="SubjectOrigin" EntityType="Self.SubjectOrigin" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="UserInRole" EntityType="Self.UserInRole" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Lesson_Subject" Association="Self.FK_Lesson_Subject">
             <End Role="Subject" EntitySet="Subject" />
             <End Role="Lesson" EntitySet="Lesson" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Meeting_Lesson" Association="Self.FK_Meeting_Lesson">
-            <End Role="Lesson" EntitySet="Lesson" />
-            <End Role="Meeting" EntitySet="Meeting" />
           </AssociationSet>
           <AssociationSet Name="FK_Participant_Meeting" Association="Self.FK_Participant_Meeting">
             <End Role="Meeting" EntitySet="Meeting" />
@@ -269,13 +236,9 @@
             <End Role="SubjectOrigin" EntitySet="SubjectOrigin" />
             <End Role="Subject" EntitySet="Subject" />
           </AssociationSet>
-          <AssociationSet Name="FK_UserInRole_Role" Association="Self.FK_UserInRole_Role">
+          <AssociationSet Name="FK_User_Role" Association="Self.FK_User_Role">
             <End Role="Role" EntitySet="Role" />
-            <End Role="UserInRole" EntitySet="UserInRole" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserInRole_User" Association="Self.FK_UserInRole_User">
             <End Role="User" EntitySet="User" />
-            <End Role="UserInRole" EntitySet="UserInRole" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -293,14 +256,9 @@
           <EntitySet Name="SubjectOrigin" EntityType="StudyTogetherModel.SubjectOrigin" />
           <EntitySet Name="sysdiagrams" EntityType="StudyTogetherModel.sysdiagrams" />
           <EntitySet Name="User" EntityType="StudyTogetherModel.User" />
-          <EntitySet Name="UserInRole" EntityType="StudyTogetherModel.UserInRole" />
           <AssociationSet Name="FK_Lesson_Subject" Association="StudyTogetherModel.FK_Lesson_Subject">
             <End Role="Subject" EntitySet="Subject" />
             <End Role="Lesson" EntitySet="Lesson" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Meeting_Lesson" Association="StudyTogetherModel.FK_Meeting_Lesson">
-            <End Role="Lesson" EntitySet="Lesson" />
-            <End Role="Meeting" EntitySet="Meeting" />
           </AssociationSet>
           <AssociationSet Name="FK_Participant_Meeting" Association="StudyTogetherModel.FK_Participant_Meeting">
             <End Role="Meeting" EntitySet="Meeting" />
@@ -322,17 +280,13 @@
             <End Role="Profile" EntitySet="Profile" />
             <End Role="Review" EntitySet="Review" />
           </AssociationSet>
-          <AssociationSet Name="FK_UserInRole_Role" Association="StudyTogetherModel.FK_UserInRole_Role">
+          <AssociationSet Name="FK_User_Role" Association="StudyTogetherModel.FK_User_Role">
             <End Role="Role" EntitySet="Role" />
-            <End Role="UserInRole" EntitySet="UserInRole" />
+            <End Role="User" EntitySet="User" />
           </AssociationSet>
           <AssociationSet Name="FK_Subject_SubjectOrigin" Association="StudyTogetherModel.FK_Subject_SubjectOrigin">
             <End Role="SubjectOrigin" EntitySet="SubjectOrigin" />
             <End Role="Subject" EntitySet="Subject" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserInRole_User" Association="StudyTogetherModel.FK_UserInRole_User">
-            <End Role="User" EntitySet="User" />
-            <End Role="UserInRole" EntitySet="UserInRole" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Lesson">
@@ -341,9 +295,9 @@
           </Key>
           <Property Name="LessonId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="SubjectId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="SubjectId" Type="Int32" />
           <NavigationProperty Name="Subject" Relationship="StudyTogetherModel.FK_Lesson_Subject" FromRole="Lesson" ToRole="Subject" />
-          <NavigationProperty Name="Meeting" Relationship="StudyTogetherModel.FK_Meeting_Lesson" FromRole="Lesson" ToRole="Meeting" />
         </EntityType>
         <EntityType Name="Meeting">
           <Key>
@@ -352,8 +306,9 @@
           <Property Name="MeetingId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Location" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="StartsAt" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="LessonId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Lesson" Relationship="StudyTogetherModel.FK_Meeting_Lesson" FromRole="Meeting" ToRole="Lesson" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Capacity" Type="Int32" Nullable="false" />
+          <Property Name="LessonId" Type="Int32" />
           <NavigationProperty Name="Participant" Relationship="StudyTogetherModel.FK_Participant_Meeting" FromRole="Meeting" ToRole="Participant" />
         </EntityType>
         <EntityType Name="Participant">
@@ -363,6 +318,7 @@
           </Key>
           <Property Name="ProfileId" Type="Int32" Nullable="false" />
           <Property Name="MeetingId" Type="Int32" Nullable="false" />
+          <Property Name="Owner" Type="Boolean" Nullable="false" />
           <Property Name="Canceled" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Meeting" Relationship="StudyTogetherModel.FK_Participant_Meeting" FromRole="Participant" ToRole="Meeting" />
           <NavigationProperty Name="Profile" Relationship="StudyTogetherModel.FK_Participant_Profile" FromRole="Participant" ToRole="Profile" />
@@ -398,7 +354,7 @@
           </Key>
           <Property Name="RoleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="RoleName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="UserInRole" Relationship="StudyTogetherModel.FK_UserInRole_Role" FromRole="Role" ToRole="UserInRole" />
+          <NavigationProperty Name="User" Relationship="StudyTogetherModel.FK_User_Role" FromRole="Role" ToRole="User" />
         </EntityType>
         <EntityType Name="Subject">
           <Key>
@@ -441,22 +397,12 @@
           <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="DateModified" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Profile" Relationship="StudyTogetherModel.FK_Profile_User" FromRole="User" ToRole="Profile" />
-          <NavigationProperty Name="UserInRole" Relationship="StudyTogetherModel.FK_UserInRole_User" FromRole="User" ToRole="UserInRole" />
-        </EntityType>
-        <EntityType Name="UserInRole">
-          <Key>
-            <PropertyRef Name="UserId" />
-            <PropertyRef Name="RoleId" />
-          </Key>
-          <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="RoleId" Type="Int32" Nullable="false" />
-          <Property Name="DateAssigned" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Role" Relationship="StudyTogetherModel.FK_UserInRole_Role" FromRole="UserInRole" ToRole="Role" />
-          <NavigationProperty Name="User" Relationship="StudyTogetherModel.FK_UserInRole_User" FromRole="UserInRole" ToRole="User" />
+          <NavigationProperty Name="Profile" Relationship="StudyTogetherModel.FK_Profile_User" FromRole="User" ToRole="Profile" />
+          <NavigationProperty Name="Role" Relationship="StudyTogetherModel.FK_User_Role" FromRole="User" ToRole="Role" />
         </EntityType>
         <Association Name="FK_Lesson_Subject">
-          <End Type="StudyTogetherModel.Subject" Role="Subject" Multiplicity="1" />
+          <End Type="StudyTogetherModel.Subject" Role="Subject" Multiplicity="0..1" />
           <End Type="StudyTogetherModel.Lesson" Role="Lesson" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Subject">
@@ -464,18 +410,6 @@
             </Principal>
             <Dependent Role="Lesson">
               <PropertyRef Name="SubjectId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Meeting_Lesson">
-          <End Type="StudyTogetherModel.Lesson" Role="Lesson" Multiplicity="1" />
-          <End Type="StudyTogetherModel.Meeting" Role="Meeting" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Lesson">
-              <PropertyRef Name="LessonId" />
-            </Principal>
-            <Dependent Role="Meeting">
-              <PropertyRef Name="LessonId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -539,14 +473,14 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserInRole_Role">
+        <Association Name="FK_User_Role">
           <End Type="StudyTogetherModel.Role" Role="Role" Multiplicity="1" />
-          <End Type="StudyTogetherModel.UserInRole" Role="UserInRole" Multiplicity="*" />
+          <End Type="StudyTogetherModel.User" Role="User" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Role">
               <PropertyRef Name="RoleId" />
             </Principal>
-            <Dependent Role="UserInRole">
+            <Dependent Role="User">
               <PropertyRef Name="RoleId" />
             </Dependent>
           </ReferentialConstraint>
@@ -563,18 +497,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserInRole_User">
-          <End Type="StudyTogetherModel.User" Role="User" Multiplicity="1" />
-          <End Type="StudyTogetherModel.UserInRole" Role="UserInRole" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="UserInRole">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -585,6 +507,7 @@
             <EntityTypeMapping TypeName="StudyTogetherModel.Lesson">
               <MappingFragment StoreEntitySet="Lesson">
                 <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="LessonId" ColumnName="LessonId" />
               </MappingFragment>
@@ -594,6 +517,8 @@
             <EntityTypeMapping TypeName="StudyTogetherModel.Meeting">
               <MappingFragment StoreEntitySet="Meeting">
                 <ScalarProperty Name="LessonId" ColumnName="LessonId" />
+                <ScalarProperty Name="Capacity" ColumnName="Capacity" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="StartsAt" ColumnName="StartsAt" />
                 <ScalarProperty Name="Location" ColumnName="Location" />
                 <ScalarProperty Name="MeetingId" ColumnName="MeetingId" />
@@ -604,6 +529,7 @@
             <EntityTypeMapping TypeName="StudyTogetherModel.Participant">
               <MappingFragment StoreEntitySet="Participant">
                 <ScalarProperty Name="Canceled" ColumnName="Canceled" />
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
                 <ScalarProperty Name="MeetingId" ColumnName="MeetingId" />
                 <ScalarProperty Name="ProfileId" ColumnName="ProfileId" />
               </MappingFragment>
@@ -669,6 +595,7 @@
           <EntitySetMapping Name="User">
             <EntityTypeMapping TypeName="StudyTogetherModel.User">
               <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
                 <ScalarProperty Name="DateModified" ColumnName="DateModified" />
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
                 <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
@@ -677,15 +604,6 @@
                 <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
                 <ScalarProperty Name="Salt" ColumnName="Salt" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="UserInRole">
-            <EntityTypeMapping TypeName="StudyTogetherModel.UserInRole">
-              <MappingFragment StoreEntitySet="UserInRole">
-                <ScalarProperty Name="DateAssigned" ColumnName="DateAssigned" />
-                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>

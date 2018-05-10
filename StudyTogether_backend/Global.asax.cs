@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
+using System.Data.Entity;
 
 namespace StudyTogether_backend
 {
@@ -12,6 +13,7 @@ namespace StudyTogether_backend
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+
         }
     }
 }

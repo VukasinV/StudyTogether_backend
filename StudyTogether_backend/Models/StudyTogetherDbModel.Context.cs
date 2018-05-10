@@ -35,6 +35,5 @@ namespace StudyTogether_backend.Models
         public virtual DbSet<SubjectOrigin> SubjectOrigin { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<User> User { get; set; }
-        public virtual DbSet<UserInRole> UserInRole { get; set; }
     }
 }

@@ -16,6 +16,7 @@ namespace StudyTogether_backend.Models
     {
         public int ProfileId { get; set; }
         public int MeetingId { get; set; }
+        public bool Owner { get; set; }
         public bool Canceled { get; set; }
     
         public virtual Meeting Meeting { get; set; }
