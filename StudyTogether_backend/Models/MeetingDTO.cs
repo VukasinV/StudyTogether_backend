@@ -12,5 +12,6 @@ namespace StudyTogether_backend.Models
         public string Description { get; set; }
         public int Capacity { get; set; }
         public string CreatedBy { get; set; }
+        public string[] Participants { get; set; }
     }
 }

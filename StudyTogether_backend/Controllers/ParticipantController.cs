@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using StudyTogether_backend.Filters;
 using StudyTogether_backend.Models;
 
 namespace StudyTogether_backend.Controllers
@@ -16,6 +17,7 @@ namespace StudyTogether_backend.Controllers
     {
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
+        [AllowAnonymous]
         // GET: api/Participant
         public IHttpActionResult GetParticipant(HttpRequestMessage message)
         {
@@ -29,18 +31,18 @@ namespace StudyTogether_backend.Controllers
             return Ok(participants);
         }
 
-        //// GET: api/Participant/5
-        //[ResponseType(typeof(Participant))]
-        //public IHttpActionResult GetParticipant(int id)
-        //{
-        //    Participant participant = db.Participant.Find(id);
-        //    if (participant == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // GET: api/Participant/5
+        [ResponseType(typeof(Participant))]
+        public IHttpActionResult GetParticipant(int id)
+        {
+            Participant participant = db.Participant.Find(id);
+            if (participant == null)
+            {
+                return NotFound();
+            }
 
-        //    return Ok(participant);
-        //}
+            return Ok(participant);
+        }
 
         // PUT: api/Participant/5
         [ResponseType(typeof(void))]
@@ -78,6 +80,7 @@ namespace StudyTogether_backend.Controllers
         }
 
         // POST: api/Participant
+        [JwtAuthentication]
         [ResponseType(typeof(Participant))]
         public IHttpActionResult PostParticipant([FromBody]ParticipantDTO participantDTO)
         {
@@ -86,7 +89,10 @@ namespace StudyTogether_backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            int userId = db.User.Where(x => x.Username == participantDTO.Username).Select(x => x.UserId).Single();
+            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+
+            if (db.Participant.Any(x => x.Profile.UserId == userId && x.MeetingId == participantDTO.MeetingId))
+                return BadRequest("Participant is already in meeting");
 
             db.Participant.Add(new Participant
             {

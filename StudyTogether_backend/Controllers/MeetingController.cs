@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using StudyTogether_backend.Filters;
 using StudyTogether_backend.Models;
 
 namespace StudyTogether_backend.Controllers
@@ -17,17 +18,27 @@ namespace StudyTogether_backend.Controllers
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
         // GET: api/Meeting
+        [AllowAnonymous]
         public IHttpActionResult GetMeeting()
         {
-            var meetings = db.Meeting.Select(x => new
-            {
-                x.Location,
-                x.StartsAt,
-                x.Description,
-                x.Capacity,
-            });
+            List<MeetingDTO> allMeetings = new List<MeetingDTO>();
 
-            return Ok(meetings);
+            var meetings = db.Meeting.ToList();
+
+            foreach(var meeting in meetings)
+            {
+                allMeetings.Add(new MeetingDTO
+                {
+                    Location = meeting.Location,
+                    StartsAt = meeting.StartsAt,
+                    Description = meeting.Description,
+                    Capacity = meeting.Capacity,
+                    CreatedBy = meeting.Participant.Where(x => x.Owner == true).Select(x => x.Profile.User.Fullname).FirstOrDefault(),
+                    Participants = meeting.Participant.Where(x => x.Owner == false).Select(x => x.Profile.User.Fullname).ToArray()
+                });
+            }
+
+            return Ok(allMeetings);
         }
 
         //// GET: api/Meeting/5
@@ -79,6 +90,7 @@ namespace StudyTogether_backend.Controllers
         }
 
         // POST: api/Meeting
+        [JwtAuthentication]
         [ResponseType(typeof(Meeting))]
         public IHttpActionResult PostMeeting([FromBody]MeetingDTO meetingDTO)
         {
@@ -87,22 +99,20 @@ namespace StudyTogether_backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            //Meeting meeting = new Meeting
-            //{
-            //    Description = meetingDTO.Description,
-            //    Capacity = meetingDTO.Capacity,
-            //    Location = meetingDTO.Location,
-            //    StartsAt = meetingDTO.StartsAt,
-            //};
+            Meeting meeting = new Meeting
+            {
+                Description = meetingDTO.Description,
+                Capacity = meetingDTO.Capacity,
+                Location = meetingDTO.Location,
+                StartsAt = meetingDTO.StartsAt,
+            };
 
-            //db.Meeting.Add(meeting);
-            //db.SaveChanges();
-            CreateMeeting(meetingDTO, true);
+            db.Meeting.Add(meeting);
+            db.SaveChanges();
 
-            int userId = db.User.Where(x => x.Username == meetingDTO.CreatedBy).Select(x => x.UserId).Single();
+            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
 
             CreateOwner(userId);
-
 
             return Ok("Meeting successfully created");
         }
@@ -135,20 +145,6 @@ namespace StudyTogether_backend.Controllers
         private bool MeetingExists(int id)
         {
             return db.Meeting.Count(e => e.MeetingId == id) > 0;
-        }
-
-        public void CreateMeeting(MeetingDTO meetingDTO, bool a)
-        {
-            Meeting meeting = new Meeting
-            {
-                Description = meetingDTO.Description,
-                Capacity = meetingDTO.Capacity,
-                Location = meetingDTO.Location,
-                StartsAt = meetingDTO.StartsAt,
-            };
-
-            db.Meeting.Add(meeting);
-            db.SaveChanges();
         }
 
         public void CreateOwner(int userId)

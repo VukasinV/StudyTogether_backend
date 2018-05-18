@@ -127,7 +127,9 @@ namespace StudyTogether_backend.Controllers
             return Ok("User sueccessfuly created!");
         }
 
+
         // DELETE: api/User/5
+        [AllowAnonymous]
         [ResponseType(typeof(User))]
         public IHttpActionResult DeleteUser(int id)
         {
