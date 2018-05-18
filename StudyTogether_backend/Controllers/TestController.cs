@@ -1,11 +1,14 @@
-﻿using StudyTogether_backend.Models;
+﻿using StudyTogether_backend.Filters;
+using StudyTogether_backend.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
+using System.Web;
 using System.Web.Http;
-
+using System.Web.Http.Filters;
 
 namespace StudyTogether_backend.Controllers
 {
@@ -13,18 +16,15 @@ namespace StudyTogether_backend.Controllers
     {
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
-        [HttpGet]
-        public IHttpActionResult Get(HttpRequestMessage message)
+
+        [JwtAuthentication]
+        public IHttpActionResult Get()
         {
+            var userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
 
-            string test = "Neki tekst";
+            string username = db.User.Where(x => x.UserId == userId).Select(x => x.Username).Single();
 
-            return Ok(test);
-        }
-
-        public string Get(int id)
-        {
-            return "value";
+            return Ok(username);
         }
 
         // POST api/values

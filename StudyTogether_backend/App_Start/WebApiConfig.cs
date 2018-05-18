@@ -14,6 +14,7 @@ namespace StudyTogether_backend
 
             // Web API configuration and services
             config.EnableCors(cors);
+            config.Filters.Add(new AuthorizeAttribute());
 
             // Web API routes
             config.MapHttpAttributeRoutes();
