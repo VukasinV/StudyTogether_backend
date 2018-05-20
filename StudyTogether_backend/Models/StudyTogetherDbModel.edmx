@@ -113,6 +113,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Meeting_Lesson">
+          <End Role="Lesson" Type="Self.Lesson" Multiplicity="0..1" />
+          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lesson">
+              <PropertyRef Name="LessonId" />
+            </Principal>
+            <Dependent Role="Meeting">
+              <PropertyRef Name="LessonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Participant_Meeting">
           <End Role="Meeting" Type="Self.Meeting" Multiplicity="1" />
           <End Role="Participant" Type="Self.Participant" Multiplicity="*" />
@@ -212,6 +224,10 @@
             <End Role="Subject" EntitySet="Subject" />
             <End Role="Lesson" EntitySet="Lesson" />
           </AssociationSet>
+          <AssociationSet Name="FK_Meeting_Lesson" Association="Self.FK_Meeting_Lesson">
+            <End Role="Lesson" EntitySet="Lesson" />
+            <End Role="Meeting" EntitySet="Meeting" />
+          </AssociationSet>
           <AssociationSet Name="FK_Participant_Meeting" Association="Self.FK_Participant_Meeting">
             <End Role="Meeting" EntitySet="Meeting" />
             <End Role="Participant" EntitySet="Participant" />
@@ -260,6 +276,10 @@
             <End Role="Subject" EntitySet="Subject" />
             <End Role="Lesson" EntitySet="Lesson" />
           </AssociationSet>
+          <AssociationSet Name="FK_Meeting_Lesson" Association="StudyTogetherModel.FK_Meeting_Lesson">
+            <End Role="Lesson" EntitySet="Lesson" />
+            <End Role="Meeting" EntitySet="Meeting" />
+          </AssociationSet>
           <AssociationSet Name="FK_Participant_Meeting" Association="StudyTogetherModel.FK_Participant_Meeting">
             <End Role="Meeting" EntitySet="Meeting" />
             <End Role="Participant" EntitySet="Participant" />
@@ -298,6 +318,7 @@
           <Property Name="Name" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="SubjectId" Type="Int32" />
           <NavigationProperty Name="Subject" Relationship="StudyTogetherModel.FK_Lesson_Subject" FromRole="Lesson" ToRole="Subject" />
+          <NavigationProperty Name="Meeting" Relationship="StudyTogetherModel.FK_Meeting_Lesson" FromRole="Lesson" ToRole="Meeting" />
         </EntityType>
         <EntityType Name="Meeting">
           <Key>
@@ -309,6 +330,7 @@
           <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Capacity" Type="Int32" Nullable="false" />
           <Property Name="LessonId" Type="Int32" />
+          <NavigationProperty Name="Lesson" Relationship="StudyTogetherModel.FK_Meeting_Lesson" FromRole="Meeting" ToRole="Lesson" />
           <NavigationProperty Name="Participant" Relationship="StudyTogetherModel.FK_Participant_Meeting" FromRole="Meeting" ToRole="Participant" />
         </EntityType>
         <EntityType Name="Participant">
@@ -410,6 +432,18 @@
             </Principal>
             <Dependent Role="Lesson">
               <PropertyRef Name="SubjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Meeting_Lesson">
+          <End Type="StudyTogetherModel.Lesson" Role="Lesson" Multiplicity="0..1" />
+          <End Type="StudyTogetherModel.Meeting" Role="Meeting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lesson">
+              <PropertyRef Name="LessonId" />
+            </Principal>
+            <Dependent Role="Meeting">
+              <PropertyRef Name="LessonId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>

@@ -14,11 +14,19 @@ namespace StudyTogether_backend.Models
     
     public partial class Lesson
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Lesson()
+        {
+            this.Meeting = new HashSet<Meeting>();
+        }
+    
         public int LessonId { get; set; }
         public string Description { get; set; }
         public string Name { get; set; }
         public Nullable<int> SubjectId { get; set; }
     
         public virtual Subject Subject { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Meeting> Meeting { get; set; }
     }
 }

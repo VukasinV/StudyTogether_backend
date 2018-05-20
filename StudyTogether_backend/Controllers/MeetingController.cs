@@ -34,7 +34,7 @@ namespace StudyTogether_backend.Controllers
                     Description = meeting.Description,
                     Capacity = meeting.Capacity,
                     CreatedBy = meeting.Participant.Where(x => x.Owner == true).Select(x => x.Profile.User.Fullname).FirstOrDefault(),
-                    Participants = meeting.Participant.Where(x => x.Owner == false).Select(x => x.Profile.User.Fullname).ToArray()
+                    Participants = meeting.Participant.Where(x => x.Owner == false).Select(x => x.Profile.User.Fullname).ToArray(),
                 });
             }
 
