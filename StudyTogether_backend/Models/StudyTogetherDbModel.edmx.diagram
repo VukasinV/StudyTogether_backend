@@ -6,7 +6,7 @@
     <edmx:Diagrams>
       <Diagram DiagramId="53152e0534794334902c0098f7dfc195" Name="Diagram1" ZoomLevel="72">
         <EntityTypeShape EntityType="StudyTogetherModel.Lesson" Width="1.5" PointX="14.5" PointY="0.5" />
-        <EntityTypeShape EntityType="StudyTogetherModel.Meeting" Width="1.5" PointX="5.5" PointY="6.25" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Meeting" Width="1.5" PointX="5.625" PointY="5.5" />
         <EntityTypeShape EntityType="StudyTogetherModel.Participant" Width="1.5" PointX="7.75" PointY="1.375" />
         <EntityTypeShape EntityType="StudyTogetherModel.Profile" Width="1.5" PointX="5.5" PointY="2.25" />
         <EntityTypeShape EntityType="StudyTogetherModel.Review" Width="1.5" PointX="10" PointY="4.25" />
