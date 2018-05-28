@@ -29,6 +29,7 @@ namespace StudyTogether_backend.Controllers
             {
                 allMeetings.Add(new MeetingDTO
                 {
+                    MeetingId = meeting.MeetingId,
                     Location = meeting.Location,
                     StartsAt = meeting.StartsAt,
                     Description = meeting.Description,
@@ -101,7 +102,7 @@ namespace StudyTogether_backend.Controllers
 
             Meeting meeting = new Meeting
             {
-                Description = meetingDTO.Description,
+                Description = meetingDTO.Description, 
                 Capacity = meetingDTO.Capacity,
                 Location = meetingDTO.Location,
                 StartsAt = meetingDTO.StartsAt,

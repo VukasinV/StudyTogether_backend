@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using StudyTogether_backend.Models;
+using StudyTogether_backend.Filters;
 
 namespace StudyTogether_backend.Controllers
 {
@@ -17,22 +18,50 @@ namespace StudyTogether_backend.Controllers
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
         // GET: api/Profile
-        public IQueryable<Profile> GetProfile()
+        [JwtAuthentication]
+        public IHttpActionResult GetProfile()
         {
-            return db.Profile;
+            //return db.Profile;
+            var profiles =  db.Profile.Select(x => new {
+                x.ProfileId,
+                x.User.Fullname,
+                x.Description
+            });
+
+            return Ok(profiles);
         }
 
         // GET: api/Profile/5
-        [ResponseType(typeof(Profile))]
+
+        [JwtAuthentication]
         public IHttpActionResult GetProfile(int id)
         {
-            Profile profile = db.Profile.Find(id);
-            if (profile == null)
+            if (id == -1)
             {
-                return NotFound();
-            }
+                int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+                var profile = db.Profile.Where(x => x.UserId == userId).Select(x => new
+                {
+                    x.User.Fullname,
+                    x.Description
+                }).FirstOrDefault();
 
-            return Ok(profile);
+                return Ok(profile);
+
+            } else
+            {
+                if (!db.Profile.Any(x => x.ProfileId == id))
+                {
+                    return NotFound();
+                }
+
+                var profile = db.Profile.Where(x => x.ProfileId == id).Select(x => new
+                {
+                    x.User.Fullname,
+                    x.Description
+                }).FirstOrDefault();
+
+                return Ok(profile);
+            }
         }
 
         // PUT: api/Profile/5

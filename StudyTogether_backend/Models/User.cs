@@ -30,6 +30,9 @@ namespace StudyTogether_backend.Models
         public System.DateTime DateCreated { get; set; }
         public Nullable<System.DateTime> DateModified { get; set; }
         public int RoleId { get; set; }
+        public string TokenAuth { get; set; }
+        public bool TwoFaEnabled { get; set; }
+        public string HashAlgorithm { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Profile> Profile { get; set; }

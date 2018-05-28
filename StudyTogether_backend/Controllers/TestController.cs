@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Filters;
+using StudyTogether_backend.Code;
 
 namespace StudyTogether_backend.Controllers
 {
@@ -20,11 +21,11 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public IHttpActionResult Get()
         {
-            var userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
 
-            string username = db.User.Where(x => x.UserId == userId).Select(x => x.Username).Single();
+            EmailManager.SendMail("test", "test", "test");
 
-            return Ok(username);
+            return Ok("Mail sent");
+
         }
 
         // POST api/values

@@ -94,11 +94,14 @@
           <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Salt" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="PasswordHash" Type="nvarchar" MaxLength="64" Nullable="false" />
+          <Property Name="HashAlgorithm" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="Fullname" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="EmailConfirmed" Type="bit" Nullable="false" />
           <Property Name="DateCreated" Type="datetime" Nullable="false" />
           <Property Name="DateModified" Type="datetime" />
+          <Property Name="TokenAuth" Type="nvarchar(max)" />
+          <Property Name="TwoFaEnabled" Type="bit" Nullable="false" />
           <Property Name="RoleId" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK_Lesson_Subject">
@@ -422,6 +425,9 @@
           <Property Name="RoleId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Profile" Relationship="StudyTogetherModel.FK_Profile_User" FromRole="User" ToRole="Profile" />
           <NavigationProperty Name="Role" Relationship="StudyTogetherModel.FK_User_Role" FromRole="User" ToRole="Role" />
+          <Property Name="TokenAuth" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TwoFaEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="HashAlgorithm" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Lesson_Subject">
           <End Type="StudyTogetherModel.Subject" Role="Subject" Multiplicity="0..1" />
@@ -629,6 +635,9 @@
           <EntitySetMapping Name="User">
             <EntityTypeMapping TypeName="StudyTogetherModel.User">
               <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="HashAlgorithm" ColumnName="HashAlgorithm" />
+                <ScalarProperty Name="TwoFaEnabled" ColumnName="TwoFaEnabled" />
+                <ScalarProperty Name="TokenAuth" ColumnName="TokenAuth" />
                 <ScalarProperty Name="RoleId" ColumnName="RoleId" />
                 <ScalarProperty Name="DateModified" ColumnName="DateModified" />
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Web;
 using StudyTogether_backend.Models;
+using System.Configuration;
 
 namespace StudyTogether_backend.Filters
 {
@@ -15,9 +16,9 @@ namespace StudyTogether_backend.Filters
         //     var hmac = new HMACSHA256();
         //     var key = Convert.ToBase64String(hmac.Key);
 
-        private const string Secret = "db3OIsj+BXE9NZDy0t8W3TcNekrF+2d/1sFnWG4HnV8TZY30iTOdtVWJG8abWvB1GlOgJuQZdcF2Luqm/hccMw==";
+        private static string Secret = ConfigurationManager.AppSettings["HashKey"];
 
-        public static string GenerateToken(int userId, int expireMinutes = 20)
+        public static string GenerateToken(int userId, int expireMonths = 3, string role = "user")
         {
             var symmetricKey = Convert.FromBase64String(Secret);
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -27,7 +28,32 @@ namespace StudyTogether_backend.Filters
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+                    new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                    new Claim(ClaimTypes.Role, role)
+                }),
+
+                Expires = now.AddMonths(expireMonths),
+
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(symmetricKey), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var stoken = tokenHandler.CreateToken(tokenDescriptor);
+            var token = tokenHandler.WriteToken(stoken);
+
+            return token;
+        }
+
+        public static string GenerateAuthToken(int sid, int expireMinutes = 20)
+        {
+            var symmetricKey = Convert.FromBase64String(Secret);
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var now = DateTime.Now;
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Sid, sid.ToString()),
                 }),
 
                 Expires = now.AddMinutes(Convert.ToInt32(expireMinutes)),
@@ -41,7 +67,16 @@ namespace StudyTogether_backend.Filters
             return token;
         }
 
-        public static ClaimsPrincipal GetPrincipal(string token)
+        public static int generateConfirmationSid()
+        {
+            Random r = new Random();
+
+            int sid = r.Next(1000000);
+
+            return sid;
+        }
+
+        public static ClaimsPrincipal GetPrincipal(string token, bool requireExpiration = false)
         {
             try
             {
@@ -55,7 +90,7 @@ namespace StudyTogether_backend.Filters
 
                 var validatorsParameters = new TokenValidationParameters()
                 {
-                    RequireExpirationTime = true,
+                    RequireExpirationTime = requireExpiration,
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     IssuerSigningKey = new SymmetricSecurityKey(symmetricKey)
@@ -64,8 +99,9 @@ namespace StudyTogether_backend.Filters
                 var principal = tokenHandler.ValidateToken(token, validatorsParameters, out SecurityToken securityToken);
 
                 return principal;
-                
-            } catch (Exception)
+
+            }
+            catch (Exception)
             {
                 return null;
             }
@@ -77,13 +113,13 @@ namespace StudyTogether_backend.Filters
 
             try
             {
-            var principal = GetPrincipal(token);
+                var principal = GetPrincipal(token);
 
-            var claims = principal.Identity as ClaimsIdentity;
+                var claims = principal.Identity as ClaimsIdentity;
 
-            var id = claims.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var id = claims.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            userId = Convert.ToInt32(id);
+                userId = Convert.ToInt32(id);
 
             }
             catch
@@ -94,5 +130,31 @@ namespace StudyTogether_backend.Filters
             return userId;
         }
 
+        public static int getUserConformationCode(string token)
+        {
+            int conformationCode;
+
+            try
+            {
+                var principal = GetPrincipal(token, true);
+
+                if (principal == null)
+                {
+                    return -1;
+                }
+
+                var claims = principal.Identity as ClaimsIdentity;
+
+                var sid = claims.FindFirst(ClaimTypes.Sid).Value;
+
+                conformationCode = Convert.ToInt32(sid);
+            }
+            catch
+            {
+                throw;
+            }
+
+            return conformationCode;
+        }
     }
 }

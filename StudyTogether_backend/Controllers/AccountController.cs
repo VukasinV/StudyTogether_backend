@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Web.Http;
 using StudyTogether_backend.Models;
 using StudyTogether_backend.Code;
+using System.Data.Entity;
 
 namespace StudyTogether_backend.Controllers
 {
@@ -17,7 +18,6 @@ namespace StudyTogether_backend.Controllers
         [AllowAnonymous]
         public IHttpActionResult PostAccount(HttpRequestMessage message)
         {
-            // Safer way for sending this may be via Basic authentication with username and password, consider changing
 
             if (!message.Headers.Contains("username") || !message.Headers.Contains("password"))
                 return BadRequest("Missing right headers!");
@@ -30,11 +30,50 @@ namespace StudyTogether_backend.Controllers
 
             if (VerifyUser(username, password))
             {
-                int userId = db.User.Where(x => x.Username == username).Select(x => x.UserId).FirstOrDefault();
+                bool sendEmailConformation = db.User.Where(x => x.Username == username).Select(x => x.TwoFaEnabled).FirstOrDefault();
+                if(sendEmailConformation)
+                {
+                    int sid = JwtManager.generateConfirmationSid();
 
-                string token = JwtManager.GenerateToken(userId);
 
-                return Ok(token);
+                    int userId = db.User.Where(x => x.Username == username).Select(x => x.UserId).FirstOrDefault();
+
+                    string authToken = JwtManager.GenerateAuthToken(sid);
+
+                    try
+                    {
+
+                        if (!ModelState.IsValid)
+                        {
+                            return BadRequest(ModelState);
+                        }
+
+                        User user = db.User.Find(userId);
+                        user.TokenAuth = authToken;
+
+                        db.User.Attach(user);
+                        db.Entry(user).Property(x => x.TokenAuth).IsModified = true;
+                        db.SaveChanges();
+
+                    } catch(Exception exception)
+                    {
+                        throw exception;
+                    }
+                    string email = db.User.Where(x => x.UserId == userId).Select(x => x.Email).FirstOrDefault();
+
+                    EmailManager.SendMail(email, $"Your conformation code is: {sid}", "Confirm your identity");
+
+                    string token = JwtManager.GenerateToken(userId, role: "notUser");
+
+                    return Created("Created",token);
+                } else
+                {
+                    int userId = db.User.Where(x => x.Username == username).Select(x => x.UserId).FirstOrDefault();
+
+                    string token = JwtManager.GenerateToken(userId);
+
+                    return Ok(token);
+                }
             }
 
             return Unauthorized();
@@ -47,7 +86,19 @@ namespace StudyTogether_backend.Controllers
 
             var salt = Convert.FromBase64String(db.User.Where(x => x.Username == username).Select(x => x.Salt).Single());
 
+            var hashAlgorithm = db.User.Where(x => x.Username == username).Select(x => x.HashAlgorithm).Single();
+
+            // assumed that default algorithm is sha256 so it doesn't throw exception
             var HPassword = Convert.ToBase64String(HashManager.Instance.HashPassword(password, salt));
+
+            switch (hashAlgorithm)
+            {
+                case "sha256": HPassword = Convert.ToBase64String(HashManager.Instance.HashPassword(password, salt));
+                    break;
+                case "sha512": HPassword = Convert.ToBase64String(HashManager512.Instance.HashPassword(password, salt));
+                    break;
+            }
+
 
             if (HPassword == db.User.Where(x => x.Username == username).Select(x => x.PasswordHash).Single())
                 return true;

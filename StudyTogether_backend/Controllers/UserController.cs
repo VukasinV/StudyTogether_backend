@@ -10,6 +10,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using StudyTogether_backend.Code;
 using StudyTogether_backend.Models;
+using StudyTogether_backend.Filters;
+using System.Configuration;
 
 namespace StudyTogether_backend.Controllers
 {
@@ -17,44 +19,12 @@ namespace StudyTogether_backend.Controllers
     {
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
-        [AllowAnonymous]
+        [JwtAuthentication]
         public IHttpActionResult GetUser(HttpRequestMessage message)
         {
+            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
 
-            if (message.Headers.Contains("conformationNeeded") && message.Headers.GetValues("conformationNeeded").FirstOrDefault() == "false")
-            {
-                var users = db.User.Select(x => new
-                {
-                    x.Username
-                });
-
-                return Ok(users);
-            }
-
-            if (!message.Headers.Contains("username") || !message.Headers.Contains("password"))
-                return BadRequest();
-
-
-            var username = message.Headers.GetValues("username").FirstOrDefault();
-            var password = message.Headers.GetValues("password").FirstOrDefault();
-
-            if (username == null || password == null)
-                return BadRequest();
-
-
-            if (!db.User.Any(x => x.Username == username))
-            {
-                return NotFound();
-            }
-
-            var salt = Convert.FromBase64String(db.User.Where(x => x.Username == username).Select(x => x.Salt).Single());
-
-            var HPassword = Convert.ToBase64String(HashManager.Instance.HashPassword(password, salt));
-
-            if (HPassword == db.User.Where(x => x.Username == username).Select(x => x.PasswordHash).Single())
-                return Ok("Logged In");
-
-            return Unauthorized();
+            return Ok(userId);
         }
 
         // PUT: api/User/5
@@ -96,6 +66,8 @@ namespace StudyTogether_backend.Controllers
         [ResponseType(typeof(User))]
         public IHttpActionResult PostUser(UserDTO userDTO)
         {
+            string hashAlgoritm = ConfigurationManager.AppSettings["HashAlgoritm"];
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -106,17 +78,28 @@ namespace StudyTogether_backend.Controllers
 
             byte[] salt = HashManager.Instance.GenerateSalt(16);
 
+            // assumed that default algorithm is sha256 so it doesn't throw exception
+            string passwordHash = Convert.ToBase64String(HashManager.Instance.HashPassword(userDTO.Password, salt));
+
+            switch (hashAlgoritm)
+            {
+                case "sha256": passwordHash = Convert.ToBase64String(HashManager.Instance.HashPassword(userDTO.Password, salt));
+                    break;
+                case "sha512": passwordHash = Convert.ToBase64String(HashManager512.Instance.HashPassword(userDTO.Password, salt));
+                    break;
+            }
 
             User user = new User
             {
                 Username = userDTO.Username,
                 Salt = Convert.ToBase64String(salt),
-                PasswordHash = Convert.ToBase64String(HashManager.Instance.HashPassword(userDTO.Password, salt)),
+                PasswordHash = passwordHash,
                 Fullname = userDTO.Fullname,
                 Email = userDTO.Email,
                 EmailConfirmed = false,
                 DateCreated = DateTime.Now,
                 DateModified = null,
+                TwoFaEnabled = false,
                 RoleId = 2
             };
 
