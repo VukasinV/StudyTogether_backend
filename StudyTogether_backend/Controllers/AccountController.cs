@@ -18,31 +18,25 @@ namespace StudyTogether_backend.Controllers
         [AllowAnonymous]
         public IHttpActionResult PostAccount(HttpRequestMessage message)
         {
-
-            if (!message.Headers.Contains("username") || !message.Headers.Contains("password"))
-                return BadRequest("Missing right headers!");
+            if (!CheckHeaders(message, out string responseMessage))
+                return BadRequest(responseMessage);
 
             var username = message.Headers.GetValues("username").FirstOrDefault();
             var password = message.Headers.GetValues("password").FirstOrDefault();
 
-            if (username == null || password == null)
-                return BadRequest("Value of headers is empty!");
-
             if (VerifyUser(username, password))
             {
+
                 bool sendEmailConformation = db.User.Where(x => x.Username == username).Select(x => x.TwoFaEnabled).FirstOrDefault();
+
                 if(sendEmailConformation)
                 {
                     int sid = JwtManager.generateConfirmationSid();
-
-
                     int userId = db.User.Where(x => x.Username == username).Select(x => x.UserId).FirstOrDefault();
-
                     string authToken = JwtManager.GenerateAuthToken(sid);
 
                     try
                     {
-
                         if (!ModelState.IsValid)
                         {
                             return BadRequest(ModelState);
@@ -59,19 +53,16 @@ namespace StudyTogether_backend.Controllers
                     {
                         throw exception;
                     }
+
                     string email = db.User.Where(x => x.UserId == userId).Select(x => x.Email).FirstOrDefault();
-
                     EmailManager.SendMail(email, $"Your conformation code is: {sid}", "Confirm your identity");
-
                     string token = JwtManager.GenerateToken(userId, role: "notUser");
-
                     return Created("Created",token);
+
                 } else
                 {
                     int userId = db.User.Where(x => x.Username == username).Select(x => x.UserId).FirstOrDefault();
-
                     string token = JwtManager.GenerateToken(userId);
-
                     return Ok(token);
                 }
             }
@@ -104,6 +95,27 @@ namespace StudyTogether_backend.Controllers
                 return true;
 
             return false;
+        }
+
+        private bool CheckHeaders (HttpRequestMessage message, out string responseMessage)
+        {
+            if (!message.Headers.Contains("username") || !message.Headers.Contains("password"))
+            {
+                responseMessage = "Missing right headers!";
+                return false;
+            }
+
+            var username = message.Headers.GetValues("username").FirstOrDefault();
+            var password = message.Headers.GetValues("password").FirstOrDefault();
+
+            if (username == null || password == null)
+            {
+                responseMessage = "Value of headers is empty!";
+                return false;
+            }
+
+            responseMessage = "Headers are ok";
+            return true;
         }
     }
 }

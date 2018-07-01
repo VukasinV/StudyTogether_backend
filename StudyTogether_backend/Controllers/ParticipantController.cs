@@ -17,23 +17,9 @@ namespace StudyTogether_backend.Controllers
     {
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
-        //[JwtAuthentication]
-        //public IHttpActionResult GetParticipant(HttpRequestMessage message)
-        //{
-        //    int meetingId = Convert.ToInt32(message.Headers.GetValues("meetingId").FirstOrDefault());
-
-        //    var participants = db.Participant.Where(x => x.MeetingId == meetingId).Select(x => new
-        //    {
-        //        x.Profile.User.Fullname
-        //    });
-
-        //    return Ok(participants);
-        //}
-
-        // GET: api/Participant/5
         // Send meetingId as parameter and check if participant is on this meeting
+        // GET: api/Participant/meetingId
         [JwtAuthentication]
-        [ResponseType(typeof(Participant))]
         public IHttpActionResult GetParticipant(int id)
         {
             int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
@@ -86,14 +72,14 @@ namespace StudyTogether_backend.Controllers
 
         // POST: api/Participant
         [JwtAuthentication]
-        public IHttpActionResult PostParticipant(HttpRequestMessage message)
+        public IHttpActionResult PostParticipant(MeetingDTO meeting)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            int meetingId = Convert.ToInt32(message.Headers.GetValues("MeetingId").FirstOrDefault());
+            int meetingId = meeting.MeetingId;
 
             int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
             int profileId = db.Profile.Where(x => x.UserId == userId).Select(x => x.ProfileId).FirstOrDefault();
@@ -112,14 +98,14 @@ namespace StudyTogether_backend.Controllers
             return Ok("Successfully joined meeting");
         }
 
+        // DELETE: api/Participant/meetingId
         [JwtAuthentication]
-        public IHttpActionResult DeleteParticipant(HttpRequestMessage message)
+        public IHttpActionResult DeleteParticipant(int id)
         {
-            int meetingId = Convert.ToInt32(message.Headers.GetValues("MeetingId").FirstOrDefault());
             int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
-            int id = db.Participant.Where(x => x.Profile.UserId == userId).Select(x => x.ProfileId).FirstOrDefault();
+            int profileId = db.Profile.Where(x => x.UserId == userId).Select(x => x.ProfileId).Single();
 
-            Participant participant = db.Participant.Find(id, meetingId);
+            Participant participant = db.Participant.Find(profileId, id);
             if (participant == null)
             {
                 return NotFound();

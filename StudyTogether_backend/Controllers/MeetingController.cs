@@ -18,7 +18,7 @@ namespace StudyTogether_backend.Controllers
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
         // GET: api/Meeting
-        [AllowAnonymous]
+        [JwtAuthentication]
         public IHttpActionResult GetMeeting()
         {
             List<MeetingDTO> allMeetings = new List<MeetingDTO>();
@@ -43,17 +43,17 @@ namespace StudyTogether_backend.Controllers
         }
 
         //// GET: api/Meeting/5
-        //[ResponseType(typeof(Meeting))]
-        //public IHttpActionResult GetMeeting(int id)
-        //{
-        //    Meeting meeting = db.Meeting.Find(id);
-        //    if (meeting == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [ResponseType(typeof(Meeting))]
+        public IHttpActionResult GetMeeting(int id)
+        {
+            Meeting meeting = db.Meeting.Find(id);
+            if (meeting == null)
+            {
+                return NotFound();
+            }
 
-        //    return Ok(meeting);
-        //}
+            return Ok(meeting);
+        }
 
         // PUT: api/Meeting/5
         [ResponseType(typeof(void))]

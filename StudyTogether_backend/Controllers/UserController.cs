@@ -22,48 +22,47 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public IHttpActionResult GetUser(HttpRequestMessage message)
         {
-            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
-
-            return Ok(userId);
+            throw new NotImplementedException();
         }
 
         // PUT: api/User/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutUser(int id, User user)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
 
-            if (id != user.UserId)
-            {
-                return BadRequest();
-            }
+            //if (id != user.UserId)
+            //{
+            //    return BadRequest();
+            //}
 
-            db.Entry(user).State = EntityState.Modified;
+            //db.Entry(user).State = EntityState.Modified;
 
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            //try
+            //{
+            //    db.SaveChanges();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!UserExists(id))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
 
-            return StatusCode(HttpStatusCode.NoContent);
+            //return StatusCode(HttpStatusCode.NoContent);
+
+            throw new NotImplementedException();
         }
 
         [AllowAnonymous]
-        [ResponseType(typeof(User))]
         public IHttpActionResult PostUser(UserDTO userDTO)
         {
             string hashAlgoritm = ConfigurationManager.AppSettings["HashAlgoritm"];
@@ -94,6 +93,7 @@ namespace StudyTogether_backend.Controllers
                 Username = userDTO.Username,
                 Salt = Convert.ToBase64String(salt),
                 PasswordHash = passwordHash,
+                HashAlgorithm = hashAlgoritm,
                 Fullname = userDTO.Fullname,
                 Email = userDTO.Email,
                 EmailConfirmed = false,
@@ -104,7 +104,6 @@ namespace StudyTogether_backend.Controllers
             };
 
             db.User.Add(user);
-
             db.SaveChanges();
 
             return Ok("User sueccessfuly created!");

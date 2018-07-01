@@ -21,7 +21,6 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public IHttpActionResult GetProfile()
         {
-            //return db.Profile;
             var profiles =  db.Profile.Select(x => new {
                 x.ProfileId,
                 x.User.Fullname,
@@ -31,8 +30,21 @@ namespace StudyTogether_backend.Controllers
             return Ok(profiles);
         }
 
-        // GET: api/Profile/5
+        // GET: api/Profile?fullname=milica
+        [JwtAuthentication]
+        public IHttpActionResult GetProfile(string fullname)
+        {
+            var profiles = db.Profile.Where(x => x.User.Fullname.StartsWith(fullname)).Select(x => new 
+            {
+                x.ProfileId,
+                x.User.Fullname,
+                x.Description
+            });
 
+            return Ok(profiles);
+        }
+
+        // GET: api/Profile/5
         [JwtAuthentication]
         public IHttpActionResult GetProfile(int id)
         {
@@ -42,7 +54,8 @@ namespace StudyTogether_backend.Controllers
                 var profile = db.Profile.Where(x => x.UserId == userId).Select(x => new
                 {
                     x.User.Fullname,
-                    x.Description
+                    x.Description,
+                    x.User.Role.RoleName
                 }).FirstOrDefault();
 
                 return Ok(profile);
@@ -57,7 +70,8 @@ namespace StudyTogether_backend.Controllers
                 var profile = db.Profile.Where(x => x.ProfileId == id).Select(x => new
                 {
                     x.User.Fullname,
-                    x.Description
+                    x.Description,
+                    x.User.Role.RoleName
                 }).FirstOrDefault();
 
                 return Ok(profile);

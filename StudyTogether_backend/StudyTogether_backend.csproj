@@ -144,10 +144,7 @@
     <Compile Include="Controllers\MeetingController.cs" />
     <Compile Include="Controllers\ParticipantController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
-    <Compile Include="Controllers\ReviewController.cs" />
-    <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\TestController.cs" />
-    <Compile Include="Controllers\TokenController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\VerifyAccountController.cs" />
     <Compile Include="Filters\AddChallengeOnUnauthorizedResult.cs" />
@@ -164,8 +161,7 @@
     <Compile Include="Models\Meeting.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\MeetingDTO.cs" />
-    <Compile Include="Models\MeetingWithParticipants.cs" />
+    <Compile Include="Models\DTO\MeetingDTO.cs" />
     <Compile Include="Models\Participant.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
@@ -175,7 +171,7 @@
     <Compile Include="Models\Review.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ReviewDTO.cs" />
+    <Compile Include="Models\DTO\ReviewDTO.cs" />
     <Compile Include="Models\Role.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
@@ -206,7 +202,7 @@
     <Compile Include="Models\User.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\UserDTO.cs" />
+    <Compile Include="Models\DTO\UserDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

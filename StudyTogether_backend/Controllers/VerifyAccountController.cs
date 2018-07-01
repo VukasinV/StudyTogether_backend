@@ -17,11 +17,8 @@ namespace StudyTogether_backend.Controllers
         public IHttpActionResult Post(HttpRequestMessage message)
         {
             int sid = Convert.ToInt32(message.Headers.GetValues("conformationCode").FirstOrDefault());
-
             int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
-
             string authToken = db.User.Where(x => x.UserId == userId).Select(x => x.TokenAuth).FirstOrDefault();
-
             int dbConformationSid = JwtManager.getUserConformationCode(authToken);
 
             if (sid == dbConformationSid)
@@ -29,18 +26,19 @@ namespace StudyTogether_backend.Controllers
                 string token = JwtManager.GenerateToken(userId);
                 return Ok(token);
             }
-
             return Unauthorized();
         }
 
         // PUT: api/VerifyAccount/5
         public void Put(int id, [FromBody]string value)
         {
+            throw new NotImplementedException();
         }
 
         // DELETE: api/VerifyAccount/5
         public void Delete(int id)
         {
+            throw new NotImplementedException();
         }
     }
 }
