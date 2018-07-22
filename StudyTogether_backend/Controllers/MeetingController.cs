@@ -42,7 +42,7 @@ namespace StudyTogether_backend.Controllers
             return Ok(allMeetings);
         }
 
-        //// GET: api/Meeting/5
+        // GET: api/Meeting/5
         [ResponseType(typeof(Meeting))]
         public IHttpActionResult GetMeeting(int id)
         {
@@ -59,35 +59,7 @@ namespace StudyTogether_backend.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutMeeting(int id, Meeting meeting)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != meeting.MeetingId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(meeting).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MeetingExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            throw new NotImplementedException();
         }
 
         // POST: api/Meeting

@@ -40,6 +40,7 @@
             <PropertyRef Name="ProfileId" />
           </Key>
           <Property Name="ProfileId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Picture" Type="varbinary(max)" />
           <Property Name="Description" Type="nvarchar" MaxLength="250" />
           <Property Name="UserId" Type="int" Nullable="false" />
         </EntityType>
@@ -353,6 +354,7 @@
             <PropertyRef Name="ProfileId" />
           </Key>
           <Property Name="ProfileId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Picture" Type="Binary" MaxLength="Max" FixedLength="false" />
           <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Participant" Relationship="StudyTogetherModel.FK_Participant_Profile" FromRole="Profile" ToRole="Participant" />
@@ -417,17 +419,17 @@
           <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Salt" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="PasswordHash" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="HashAlgorithm" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="Fullname" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="DateModified" Type="DateTime" Precision="3" />
+          <Property Name="TokenAuth" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TwoFaEnabled" Type="Boolean" Nullable="false" />
           <Property Name="RoleId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Profile" Relationship="StudyTogetherModel.FK_Profile_User" FromRole="User" ToRole="Profile" />
           <NavigationProperty Name="Role" Relationship="StudyTogetherModel.FK_User_Role" FromRole="User" ToRole="Role" />
-          <Property Name="TokenAuth" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="TwoFaEnabled" Type="Boolean" Nullable="false" />
-          <Property Name="HashAlgorithm" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Lesson_Subject">
           <End Type="StudyTogetherModel.Subject" Role="Subject" Multiplicity="0..1" />
@@ -580,6 +582,7 @@
               <MappingFragment StoreEntitySet="Profile">
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Picture" ColumnName="Picture" />
                 <ScalarProperty Name="ProfileId" ColumnName="ProfileId" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -635,15 +638,15 @@
           <EntitySetMapping Name="User">
             <EntityTypeMapping TypeName="StudyTogetherModel.User">
               <MappingFragment StoreEntitySet="User">
-                <ScalarProperty Name="HashAlgorithm" ColumnName="HashAlgorithm" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
                 <ScalarProperty Name="TwoFaEnabled" ColumnName="TwoFaEnabled" />
                 <ScalarProperty Name="TokenAuth" ColumnName="TokenAuth" />
-                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
                 <ScalarProperty Name="DateModified" ColumnName="DateModified" />
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
                 <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Fullname" ColumnName="Fullname" />
+                <ScalarProperty Name="HashAlgorithm" ColumnName="HashAlgorithm" />
                 <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
                 <ScalarProperty Name="Salt" ColumnName="Salt" />
                 <ScalarProperty Name="Username" ColumnName="Username" />

@@ -15,6 +15,7 @@ namespace StudyTogether_backend.Controllers
     {
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
+        [HttpPost]
         [AllowAnonymous]
         public IHttpActionResult PostAccount(HttpRequestMessage message)
         {

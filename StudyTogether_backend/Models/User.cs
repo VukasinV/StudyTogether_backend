@@ -24,15 +24,15 @@ namespace StudyTogether_backend.Models
         public string Username { get; set; }
         public string Salt { get; set; }
         public string PasswordHash { get; set; }
+        public string HashAlgorithm { get; set; }
         public string Fullname { get; set; }
         public string Email { get; set; }
         public bool EmailConfirmed { get; set; }
         public System.DateTime DateCreated { get; set; }
         public Nullable<System.DateTime> DateModified { get; set; }
-        public int RoleId { get; set; }
         public string TokenAuth { get; set; }
         public bool TwoFaEnabled { get; set; }
-        public string HashAlgorithm { get; set; }
+        public int RoleId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Profile> Profile { get; set; }

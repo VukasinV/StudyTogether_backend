@@ -38,6 +38,7 @@ namespace StudyTogether_backend.Controllers
             {
                 x.ProfileId,
                 x.User.Fullname,
+                x.Picture,
                 x.Description
             });
 
@@ -55,6 +56,7 @@ namespace StudyTogether_backend.Controllers
                 {
                     x.User.Fullname,
                     x.Description,
+                    x.Picture,
                     x.User.Role.RoleName
                 }).FirstOrDefault();
 

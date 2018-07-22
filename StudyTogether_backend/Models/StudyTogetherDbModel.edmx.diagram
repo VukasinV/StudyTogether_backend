@@ -5,16 +5,16 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="53152e0534794334902c0098f7dfc195" Name="Diagram1" ZoomLevel="94">
-        <EntityTypeShape EntityType="StudyTogetherModel.Lesson" Width="1.5" PointX="6.375" PointY="7.75" />
-        <EntityTypeShape EntityType="StudyTogetherModel.Meeting" Width="1.5" PointX="8.625" PointY="7.5" />
-        <EntityTypeShape EntityType="StudyTogetherModel.Participant" Width="1.5" PointX="10.875" PointY="2.75" />
-        <EntityTypeShape EntityType="StudyTogetherModel.Profile" Width="1.5" PointX="5.625" PointY="2.625" />
-        <EntityTypeShape EntityType="StudyTogetherModel.Review" Width="1.5" PointX="7.875" PointY="2.5" />
-        <EntityTypeShape EntityType="StudyTogetherModel.Role" Width="1.5" PointX="1.125" PointY="3" />
-        <EntityTypeShape EntityType="StudyTogetherModel.Subject" Width="1.5" PointX="4.125" PointY="7.875" />
-        <EntityTypeShape EntityType="StudyTogetherModel.SubjectOrigin" Width="1.5" PointX="1.875" PointY="8" />
-        <EntityTypeShape EntityType="StudyTogetherModel.sysdiagrams" Width="1.5" PointX="1.125" PointY="10.75" />
-        <EntityTypeShape EntityType="StudyTogetherModel.User" Width="1.5" PointX="3.375" PointY="2.125" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Lesson" Width="1.5" PointX="6" PointY="7.75" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Meeting" Width="1.5" PointX="8.25" PointY="7.5" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Participant" Width="1.5" PointX="10.5" PointY="2.75" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Profile" Width="1.5" PointX="5.25" PointY="2.5" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Review" Width="1.5" PointX="7.5" PointY="2.5" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Role" Width="1.5" PointX="0.75" PointY="3" />
+        <EntityTypeShape EntityType="StudyTogetherModel.Subject" Width="1.5" PointX="3.75" PointY="7.875" />
+        <EntityTypeShape EntityType="StudyTogetherModel.SubjectOrigin" Width="1.5" PointX="1.5" PointY="8" />
+        <EntityTypeShape EntityType="StudyTogetherModel.sysdiagrams" Width="1.5" PointX="0.75" PointY="10.75" />
+        <EntityTypeShape EntityType="StudyTogetherModel.User" Width="1.5" PointX="3" PointY="1.875" />
         <AssociationConnector Association="StudyTogetherModel.FK_Lesson_Subject" />
         <AssociationConnector Association="StudyTogetherModel.FK_Meeting_Lesson" />
         <AssociationConnector Association="StudyTogetherModel.FK_Participant_Meeting" />
