@@ -25,14 +25,11 @@ namespace StudyTogether_backend.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Lesson> Lesson { get; set; }
         public virtual DbSet<Meeting> Meeting { get; set; }
         public virtual DbSet<Participant> Participant { get; set; }
         public virtual DbSet<Profile> Profile { get; set; }
         public virtual DbSet<Review> Review { get; set; }
         public virtual DbSet<Role> Role { get; set; }
-        public virtual DbSet<Subject> Subject { get; set; }
-        public virtual DbSet<SubjectOrigin> SubjectOrigin { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<User> User { get; set; }
     }

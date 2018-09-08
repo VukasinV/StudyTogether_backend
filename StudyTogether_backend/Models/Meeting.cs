@@ -25,9 +25,7 @@ namespace StudyTogether_backend.Models
         public System.DateTime StartsAt { get; set; }
         public string Description { get; set; }
         public int Capacity { get; set; }
-        public Nullable<int> LessonId { get; set; }
     
-        public virtual Lesson Lesson { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Participant> Participant { get; set; }
     }

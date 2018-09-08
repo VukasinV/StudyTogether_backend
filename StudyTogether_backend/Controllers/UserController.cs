@@ -19,10 +19,21 @@ namespace StudyTogether_backend.Controllers
     {
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
+
         [JwtAuthentication]
-        public IHttpActionResult GetUser(HttpRequestMessage message)
+        public IHttpActionResult GetUser()
         {
-            throw new NotImplementedException();
+            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+
+            var profile = db.Profile.Where(x => x.UserId == userId).Select(x => new
+            {
+                x.ProfileId,
+                x.User.Fullname,
+                x.Picture,
+                x.Description,
+            });
+
+            return Ok(profile);
         }
 
         // PUT: api/User/5
@@ -63,7 +74,7 @@ namespace StudyTogether_backend.Controllers
         }
 
         [AllowAnonymous]
-        public IHttpActionResult PostUser(UserDTO userDTO)
+        public IHttpActionResult PostUser(User user)
         {
             string hashAlgoritm = ConfigurationManager.AppSettings["HashAlgoritm"];
 
@@ -72,43 +83,39 @@ namespace StudyTogether_backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (db.User.Any(x => x.Username == userDTO.Username))
+            if (db.User.Any(x => x.Username == user.Username))
                 return Conflict();
 
             byte[] salt = HashManager.Instance.GenerateSalt(16);
 
             // assumed that default algorithm is sha256 so it doesn't throw exception
-            string passwordHash = Convert.ToBase64String(HashManager.Instance.HashPassword(userDTO.Password, salt));
+            string passwordHash = Convert.ToBase64String(HashManager.Instance.HashPassword(user.Password, salt));
 
             switch (hashAlgoritm)
             {
-                case "sha256": passwordHash = Convert.ToBase64String(HashManager.Instance.HashPassword(userDTO.Password, salt));
+                case "sha256": passwordHash = Convert.ToBase64String(HashManager.Instance.HashPassword(user.Password, salt));
                     break;
-                case "sha512": passwordHash = Convert.ToBase64String(HashManager512.Instance.HashPassword(userDTO.Password, salt));
+                case "sha512": passwordHash = Convert.ToBase64String(HashManager512.Instance.HashPassword(user.Password, salt));
                     break;
             }
 
-            User user = new User
-            {
-                Username = userDTO.Username,
-                Salt = Convert.ToBase64String(salt),
-                PasswordHash = passwordHash,
-                HashAlgorithm = hashAlgoritm,
-                Fullname = userDTO.Fullname,
-                Email = userDTO.Email,
-                EmailConfirmed = false,
-                DateCreated = DateTime.Now,
-                DateModified = null,
-                TwoFaEnabled = false,
-                RoleId = 2
-            };
+            user.Salt = Convert.ToBase64String(salt);
+            user.Password = passwordHash;
+            user.HashAlgorithm = hashAlgoritm;
+            user.EmailConfirmed = false;
+            user.DateCreated = DateTime.Now;
+            user.DateModified = null;
+            user.TwoFaEnabled = false;
+            user.RoleId = 2;
+            
 
             db.User.Add(user);
             db.SaveChanges();
 
-            return Ok("User sueccessfuly created!");
-        }
+            CreateProfile(user.UserId);
 
+            return Ok("User successfuly created!");
+        }
 
         // DELETE: api/User/5
         [AllowAnonymous]
@@ -139,6 +146,16 @@ namespace StudyTogether_backend.Controllers
         private bool UserExists(int id)
         {
             return db.User.Count(e => e.UserId == id) > 0;
+        }
+
+        private void CreateProfile(int userId)
+        {
+            db.Profile.Add(new Profile
+            {
+                UserId = userId
+            });
+
+            db.SaveChanges();
         }
     }
 }

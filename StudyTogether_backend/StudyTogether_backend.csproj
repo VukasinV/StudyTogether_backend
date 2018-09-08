@@ -155,13 +155,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Lesson.cs">
-      <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Meeting.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DTO\MeetingDTO.cs" />
     <Compile Include="Models\Participant.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
@@ -171,7 +167,6 @@
     <Compile Include="Models\Review.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DTO\ReviewDTO.cs" />
     <Compile Include="Models\Role.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
@@ -190,19 +185,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>StudyTogetherDbModel.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Models\Subject.cs">
-      <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\SubjectOrigin.cs">
-      <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User.cs">
       <DependentUpon>StudyTogetherDbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DTO\UserDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

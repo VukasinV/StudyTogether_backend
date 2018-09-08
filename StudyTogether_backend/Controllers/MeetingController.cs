@@ -21,38 +21,23 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public IHttpActionResult GetMeeting()
         {
-            List<MeetingDTO> allMeetings = new List<MeetingDTO>();
 
-            var meetings = db.Meeting.ToList();
-
-            foreach(var meeting in meetings)
+            var meetings = db.Meeting.Select(x => new
             {
-                allMeetings.Add(new MeetingDTO
-                {
-                    MeetingId = meeting.MeetingId,
-                    Location = meeting.Location,
-                    StartsAt = meeting.StartsAt,
-                    Description = meeting.Description,
-                    Capacity = meeting.Capacity,
-                    CreatedBy = meeting.Participant.Where(x => x.Owner == true).Select(x => x.Profile.User.Fullname).FirstOrDefault(),
-                    Participants = meeting.Participant.Where(x => x.Owner == false).Select(x => x.Profile.User.Fullname).ToArray(),
-                });
-            }
+                x.MeetingId,
+                x.Location,
+                x.StartsAt,
+                x.Description,
+                x.Capacity,
+                CreatedBy = x.Participant.Where(y => y.Owner == true)
+                                        .Select(y => y.Profile.User.Fullname)
+                                        .FirstOrDefault(),
+                Participants = x.Participant.Where(y => y.Owner == false)
+                                            .Select(y => y.Profile.User.Fullname)
+                                            .ToList(),
+            });
 
-            return Ok(allMeetings);
-        }
-
-        // GET: api/Meeting/5
-        [ResponseType(typeof(Meeting))]
-        public IHttpActionResult GetMeeting(int id)
-        {
-            Meeting meeting = db.Meeting.Find(id);
-            if (meeting == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(meeting);
+            return Ok(meetings);
         }
 
         // PUT: api/Meeting/5
@@ -65,20 +50,12 @@ namespace StudyTogether_backend.Controllers
         // POST: api/Meeting
         [JwtAuthentication]
         [ResponseType(typeof(Meeting))]
-        public IHttpActionResult PostMeeting([FromBody]MeetingDTO meetingDTO)
+        public IHttpActionResult PostMeeting([FromBody]Meeting meeting)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            Meeting meeting = new Meeting
-            {
-                Description = meetingDTO.Description, 
-                Capacity = meetingDTO.Capacity,
-                Location = meetingDTO.Location,
-                StartsAt = meetingDTO.StartsAt,
-            };
 
             db.Meeting.Add(meeting);
             db.SaveChanges();
@@ -122,7 +99,10 @@ namespace StudyTogether_backend.Controllers
 
         public void CreateOwner(int userId)
         {
-            int pID = db.Profile.Where(x => x.UserId == userId).Select(x => x.ProfileId).FirstOrDefault();
+            int pID = db.Profile.Where(x => x.UserId == userId)
+                                .Select(x => x.ProfileId)
+                                .FirstOrDefault();
+
             db.Participant.Add(new Participant
             {
                 Owner = true,

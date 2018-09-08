@@ -23,7 +23,10 @@ namespace StudyTogether_backend.Controllers
         public IHttpActionResult GetParticipant(int id)
         {
             int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
-            int profileId = db.Profile.Where(x => x.UserId == userId).Select(x => x.ProfileId).FirstOrDefault();
+
+            int profileId = db.Profile.Where(x => x.UserId == userId)
+                                      .Select(x => x.ProfileId)
+                                      .FirstOrDefault();
 
             Participant participant = db.Participant.Find(profileId, id);
 
@@ -72,30 +75,27 @@ namespace StudyTogether_backend.Controllers
 
         // POST: api/Participant
         [JwtAuthentication]
-        public IHttpActionResult PostParticipant(MeetingDTO meeting)
+        public IHttpActionResult PostParticipant(Participant participant)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            int meetingId = meeting.MeetingId;
-
             int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
-            int profileId = db.Profile.Where(x => x.UserId == userId).Select(x => x.ProfileId).FirstOrDefault();
+            int profileId = db.Profile.Where(x => x.UserId == userId)
+                                      .Select(x => x.ProfileId)
+                                      .FirstOrDefault();
 
-            if (db.Participant.Any(x => x.ProfileId == profileId && x.MeetingId == meetingId))
+            if (db.Participant.Any(x => x.ProfileId == profileId && x.MeetingId == participant.MeetingId))
                 return BadRequest("User is already on that meeting!");
 
-            db.Participant.Add(new Participant
-            {
-                ProfileId = profileId,
-                MeetingId = meetingId
-            });
+            participant.ProfileId = profileId;
 
+            db.Participant.Add(participant);
             db.SaveChanges();
 
-            return Ok("Successfully joined meeting");
+            return Ok();
         }
 
         // DELETE: api/Participant/meetingId

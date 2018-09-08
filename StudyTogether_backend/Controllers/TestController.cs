@@ -23,39 +23,50 @@ namespace StudyTogether_backend.Controllers
         public List<Korisnik> Korisnici = Korisnik.Napuni();
 
         [HttpGet]
-        [AllowAnonymous]
+        [JwtAuthentication]
         public HttpResponseMessage Get()
         {
-            MemoryStream ms = new MemoryStream(db.Profile.Where(x => x.ProfileId == 1).Select(x => x.Picture).FirstOrDefault());
+            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+            int profileId = db.Profile.Where(x => x.UserId == userId).Select(x => x.ProfileId).First();
+
+
+            MemoryStream ms = new MemoryStream(db.Profile.Where(x => x.ProfileId == profileId).Select(x => x.Picture).FirstOrDefault());
             Image returnImage = Image.FromStream(ms);
-            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
-            result.Content = new ByteArrayContent(ms.ToArray());
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(ms.ToArray())
+            };
             result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
             return result;
+
+
         }
 
         // POST api/values
         [HttpPost]
-        [AllowAnonymous]
+        [JwtAuthentication]
         public async Task<IHttpActionResult> Upload()
         {
+            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+
+            int profileId = db.Profile.Where(x => x.UserId == userId).Select(x => x.ProfileId).FirstOrDefault();
             try
             {
 
                 if (!Request.Content.IsMimeMultipartContent())
                 {
-                    return this.StatusCode(HttpStatusCode.UnsupportedMediaType);
+                    return StatusCode(HttpStatusCode.UnsupportedMediaType);
                 }
 
                 var filesProvider = await Request.Content.ReadAsMultipartAsync();
                 var fileContents = filesProvider.Contents.FirstOrDefault();
                 if (fileContents == null)
                 {
-                    return this.BadRequest("Missing file");
+                    return BadRequest("Missing file");
                 }
 
                 byte[] payload = await fileContents.ReadAsByteArrayAsync();
-                Profile profile = db.Profile.Find(1);
+                Profile profile = db.Profile.Find(profileId);
                 profile.Picture = payload;
                 db.Profile.Attach(profile);
                 db.Entry(profile).Property(x => x.Picture).IsModified = true;
@@ -75,10 +86,6 @@ namespace StudyTogether_backend.Controllers
             {
                 return BadRequest(e.Message);
             }
-            finally
-            {
-
-            }
         }
 
         // PUT api/values/5
@@ -90,6 +97,7 @@ namespace StudyTogether_backend.Controllers
         public void Delete(int id)
         {
         }
+
     }
 
     public class Korisnik

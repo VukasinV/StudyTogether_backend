@@ -21,7 +21,8 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public IHttpActionResult GetProfile()
         {
-            var profiles =  db.Profile.Select(x => new {
+            var profiles = db.Profile.Select(x => new
+            {
                 x.ProfileId,
                 x.User.Fullname,
                 x.Description
@@ -34,7 +35,7 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public IHttpActionResult GetProfile(string fullname)
         {
-            var profiles = db.Profile.Where(x => x.User.Fullname.StartsWith(fullname)).Select(x => new 
+            var profiles = db.Profile.Where(x => x.User.Fullname.StartsWith(fullname)).Select(x => new
             {
                 x.ProfileId,
                 x.User.Fullname,
@@ -48,36 +49,20 @@ namespace StudyTogether_backend.Controllers
         // GET: api/Profile/5
         [JwtAuthentication]
         public IHttpActionResult GetProfile(int id)
-        {
-            if (id == -1)
+        { 
+            if (!db.Profile.Any(x => x.ProfileId == id))
             {
-                int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
-                var profile = db.Profile.Where(x => x.UserId == userId).Select(x => new
-                {
-                    x.User.Fullname,
-                    x.Description,
-                    x.Picture,
-                    x.User.Role.RoleName
-                }).FirstOrDefault();
-
-                return Ok(profile);
-
-            } else
-            {
-                if (!db.Profile.Any(x => x.ProfileId == id))
-                {
-                    return NotFound();
-                }
-
-                var profile = db.Profile.Where(x => x.ProfileId == id).Select(x => new
-                {
-                    x.User.Fullname,
-                    x.Description,
-                    x.User.Role.RoleName
-                }).FirstOrDefault();
-
-                return Ok(profile);
+                return NotFound();
             }
+
+            var profile = db.Profile.Where(x => x.ProfileId == id).Select(x => new
+            {
+                x.User.Fullname,
+                x.Description,
+                x.User.Role.RoleName
+            }).FirstOrDefault();
+
+            return Ok(profile);
         }
 
         // PUT: api/Profile/5

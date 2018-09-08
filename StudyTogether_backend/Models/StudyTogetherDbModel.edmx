@@ -5,15 +5,6 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="StudyTogetherModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Lesson">
-          <Key>
-            <PropertyRef Name="LessonId" />
-          </Key>
-          <Property Name="LessonId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Description" Type="nvarchar" MaxLength="250" />
-          <Property Name="Name" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="SubjectId" Type="int" />
-        </EntityType>
         <EntityType Name="Meeting">
           <Key>
             <PropertyRef Name="MeetingId" />
@@ -23,7 +14,6 @@
           <Property Name="StartsAt" Type="datetime" Nullable="false" />
           <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Capacity" Type="int" Nullable="false" />
-          <Property Name="LessonId" Type="int" />
         </EntityType>
         <EntityType Name="Participant">
           <Key>
@@ -62,21 +52,6 @@
           <Property Name="RoleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RoleName" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
-        <EntityType Name="Subject">
-          <Key>
-            <PropertyRef Name="SubjectId" />
-          </Key>
-          <Property Name="SubjectId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubjectName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="SubjectOriginNameId" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="SubjectOrigin">
-          <Key>
-            <PropertyRef Name="SubjectOriginId" />
-          </Key>
-          <Property Name="SubjectOriginId" Type="int" Nullable="false" />
-          <Property Name="SubjectOriginName" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
             <PropertyRef Name="diagram_id" />
@@ -94,7 +69,7 @@
           <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Username" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Salt" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="PasswordHash" Type="nvarchar" MaxLength="64" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="64" Nullable="false" />
           <Property Name="HashAlgorithm" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="Fullname" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
@@ -104,31 +79,8 @@
           <Property Name="TokenAuth" Type="nvarchar(max)" />
           <Property Name="TwoFaEnabled" Type="bit" Nullable="false" />
           <Property Name="RoleId" Type="int" Nullable="false" />
+          <Property Name="Active" Type="bit" />
         </EntityType>
-        <Association Name="FK_Lesson_Subject">
-          <End Role="Subject" Type="Self.Subject" Multiplicity="0..1" />
-          <End Role="Lesson" Type="Self.Lesson" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subject">
-              <PropertyRef Name="SubjectId" />
-            </Principal>
-            <Dependent Role="Lesson">
-              <PropertyRef Name="SubjectId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Meeting_Lesson">
-          <End Role="Lesson" Type="Self.Lesson" Multiplicity="0..1" />
-          <End Role="Meeting" Type="Self.Meeting" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Lesson">
-              <PropertyRef Name="LessonId" />
-            </Principal>
-            <Dependent Role="Meeting">
-              <PropertyRef Name="LessonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Participant_Meeting">
           <End Role="Meeting" Type="Self.Meeting" Multiplicity="1" />
           <End Role="Participant" Type="Self.Participant" Multiplicity="*" />
@@ -189,18 +141,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Subject_SubjectOrigin">
-          <End Role="SubjectOrigin" Type="Self.SubjectOrigin" Multiplicity="1" />
-          <End Role="Subject" Type="Self.Subject" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="SubjectOrigin">
-              <PropertyRef Name="SubjectOriginId" />
-            </Principal>
-            <Dependent Role="Subject">
-              <PropertyRef Name="SubjectId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_User_Role">
           <End Role="Role" Type="Self.Role" Multiplicity="1" />
           <End Role="User" Type="Self.User" Multiplicity="*" />
@@ -214,24 +154,13 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="StudyTogetherModelStoreContainer">
-          <EntitySet Name="Lesson" EntityType="Self.Lesson" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Meeting" EntityType="Self.Meeting" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Participant" EntityType="Self.Participant" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Profile" EntityType="Self.Profile" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Review" EntityType="Self.Review" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Subject" EntityType="Self.Subject" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="SubjectOrigin" EntityType="Self.SubjectOrigin" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_Lesson_Subject" Association="Self.FK_Lesson_Subject">
-            <End Role="Subject" EntitySet="Subject" />
-            <End Role="Lesson" EntitySet="Lesson" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Meeting_Lesson" Association="Self.FK_Meeting_Lesson">
-            <End Role="Lesson" EntitySet="Lesson" />
-            <End Role="Meeting" EntitySet="Meeting" />
-          </AssociationSet>
           <AssociationSet Name="FK_Participant_Meeting" Association="Self.FK_Participant_Meeting">
             <End Role="Meeting" EntitySet="Meeting" />
             <End Role="Participant" EntitySet="Participant" />
@@ -252,10 +181,6 @@
             <End Role="Profile" EntitySet="Profile" />
             <End Role="Review" EntitySet="Review" />
           </AssociationSet>
-          <AssociationSet Name="FK_Subject_SubjectOrigin" Association="Self.FK_Subject_SubjectOrigin">
-            <End Role="SubjectOrigin" EntitySet="SubjectOrigin" />
-            <End Role="Subject" EntitySet="Subject" />
-          </AssociationSet>
           <AssociationSet Name="FK_User_Role" Association="Self.FK_User_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="User" EntitySet="User" />
@@ -266,24 +191,12 @@
     <edmx:ConceptualModels>
       <Schema Namespace="StudyTogetherModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="StudyTogetherEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Lesson" EntityType="StudyTogetherModel.Lesson" />
           <EntitySet Name="Meeting" EntityType="StudyTogetherModel.Meeting" />
           <EntitySet Name="Participant" EntityType="StudyTogetherModel.Participant" />
           <EntitySet Name="Profile" EntityType="StudyTogetherModel.Profile" />
           <EntitySet Name="Review" EntityType="StudyTogetherModel.Review" />
           <EntitySet Name="Role" EntityType="StudyTogetherModel.Role" />
-          <EntitySet Name="Subject" EntityType="StudyTogetherModel.Subject" />
-          <EntitySet Name="SubjectOrigin" EntityType="StudyTogetherModel.SubjectOrigin" />
           <EntitySet Name="sysdiagrams" EntityType="StudyTogetherModel.sysdiagrams" />
-          <EntitySet Name="User" EntityType="StudyTogetherModel.User" />
-          <AssociationSet Name="FK_Lesson_Subject" Association="StudyTogetherModel.FK_Lesson_Subject">
-            <End Role="Subject" EntitySet="Subject" />
-            <End Role="Lesson" EntitySet="Lesson" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Meeting_Lesson" Association="StudyTogetherModel.FK_Meeting_Lesson">
-            <End Role="Lesson" EntitySet="Lesson" />
-            <End Role="Meeting" EntitySet="Meeting" />
-          </AssociationSet>
           <AssociationSet Name="FK_Participant_Meeting" Association="StudyTogetherModel.FK_Participant_Meeting">
             <End Role="Meeting" EntitySet="Meeting" />
             <End Role="Participant" EntitySet="Participant" />
@@ -291,10 +204,6 @@
           <AssociationSet Name="FK_Participant_Profile" Association="StudyTogetherModel.FK_Participant_Profile">
             <End Role="Profile" EntitySet="Profile" />
             <End Role="Participant" EntitySet="Participant" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Profile_User" Association="StudyTogetherModel.FK_Profile_User">
-            <End Role="User" EntitySet="User" />
-            <End Role="Profile" EntitySet="Profile" />
           </AssociationSet>
           <AssociationSet Name="FK_Reviewed_Profile" Association="StudyTogetherModel.FK_Reviewed_Profile">
             <End Role="Profile" EntitySet="Profile" />
@@ -304,26 +213,16 @@
             <End Role="Profile" EntitySet="Profile" />
             <End Role="Review" EntitySet="Review" />
           </AssociationSet>
+          <EntitySet Name="User" EntityType="StudyTogetherModel.User" />
+          <AssociationSet Name="FK_Profile_User" Association="StudyTogetherModel.FK_Profile_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Profile" EntitySet="Profile" />
+          </AssociationSet>
           <AssociationSet Name="FK_User_Role" Association="StudyTogetherModel.FK_User_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="User" EntitySet="User" />
           </AssociationSet>
-          <AssociationSet Name="FK_Subject_SubjectOrigin" Association="StudyTogetherModel.FK_Subject_SubjectOrigin">
-            <End Role="SubjectOrigin" EntitySet="SubjectOrigin" />
-            <End Role="Subject" EntitySet="Subject" />
-          </AssociationSet>
         </EntityContainer>
-        <EntityType Name="Lesson">
-          <Key>
-            <PropertyRef Name="LessonId" />
-          </Key>
-          <Property Name="LessonId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="SubjectId" Type="Int32" />
-          <NavigationProperty Name="Subject" Relationship="StudyTogetherModel.FK_Lesson_Subject" FromRole="Lesson" ToRole="Subject" />
-          <NavigationProperty Name="Meeting" Relationship="StudyTogetherModel.FK_Meeting_Lesson" FromRole="Lesson" ToRole="Meeting" />
-        </EntityType>
         <EntityType Name="Meeting">
           <Key>
             <PropertyRef Name="MeetingId" />
@@ -333,8 +232,6 @@
           <Property Name="StartsAt" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Capacity" Type="Int32" Nullable="false" />
-          <Property Name="LessonId" Type="Int32" />
-          <NavigationProperty Name="Lesson" Relationship="StudyTogetherModel.FK_Meeting_Lesson" FromRole="Meeting" ToRole="Lesson" />
           <NavigationProperty Name="Participant" Relationship="StudyTogetherModel.FK_Participant_Meeting" FromRole="Meeting" ToRole="Participant" />
         </EntityType>
         <EntityType Name="Participant">
@@ -358,9 +255,9 @@
           <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Participant" Relationship="StudyTogetherModel.FK_Participant_Profile" FromRole="Profile" ToRole="Participant" />
-          <NavigationProperty Name="User" Relationship="StudyTogetherModel.FK_Profile_User" FromRole="Profile" ToRole="User" />
           <NavigationProperty Name="Review" Relationship="StudyTogetherModel.FK_Reviewed_Profile" FromRole="Profile" ToRole="Review" />
           <NavigationProperty Name="Review1" Relationship="StudyTogetherModel.FK_Reviewer_Profile" FromRole="Profile" ToRole="Review" />
+          <NavigationProperty Name="User" Relationship="StudyTogetherModel.FK_Profile_User" FromRole="Profile" ToRole="User" />
         </EntityType>
         <EntityType Name="Review">
           <Key>
@@ -383,24 +280,6 @@
           <Property Name="RoleName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="User" Relationship="StudyTogetherModel.FK_User_Role" FromRole="Role" ToRole="User" />
         </EntityType>
-        <EntityType Name="Subject">
-          <Key>
-            <PropertyRef Name="SubjectId" />
-          </Key>
-          <Property Name="SubjectId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SubjectName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="SubjectOriginNameId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Lesson" Relationship="StudyTogetherModel.FK_Lesson_Subject" FromRole="Subject" ToRole="Lesson" />
-          <NavigationProperty Name="SubjectOrigin" Relationship="StudyTogetherModel.FK_Subject_SubjectOrigin" FromRole="Subject" ToRole="SubjectOrigin" />
-        </EntityType>
-        <EntityType Name="SubjectOrigin">
-          <Key>
-            <PropertyRef Name="SubjectOriginId" />
-          </Key>
-          <Property Name="SubjectOriginId" Type="Int32" Nullable="false" />
-          <Property Name="SubjectOriginName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Subject" Relationship="StudyTogetherModel.FK_Subject_SubjectOrigin" FromRole="SubjectOrigin" ToRole="Subject" />
-        </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
             <PropertyRef Name="diagram_id" />
@@ -411,50 +290,6 @@
           <Property Name="version" Type="Int32" />
           <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
-        <EntityType Name="User">
-          <Key>
-            <PropertyRef Name="UserId" />
-          </Key>
-          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Salt" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PasswordHash" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
-          <Property Name="HashAlgorithm" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="Fullname" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
-          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="DateModified" Type="DateTime" Precision="3" />
-          <Property Name="TokenAuth" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="TwoFaEnabled" Type="Boolean" Nullable="false" />
-          <Property Name="RoleId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Profile" Relationship="StudyTogetherModel.FK_Profile_User" FromRole="User" ToRole="Profile" />
-          <NavigationProperty Name="Role" Relationship="StudyTogetherModel.FK_User_Role" FromRole="User" ToRole="Role" />
-        </EntityType>
-        <Association Name="FK_Lesson_Subject">
-          <End Type="StudyTogetherModel.Subject" Role="Subject" Multiplicity="0..1" />
-          <End Type="StudyTogetherModel.Lesson" Role="Lesson" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subject">
-              <PropertyRef Name="SubjectId" />
-            </Principal>
-            <Dependent Role="Lesson">
-              <PropertyRef Name="SubjectId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Meeting_Lesson">
-          <End Type="StudyTogetherModel.Lesson" Role="Lesson" Multiplicity="0..1" />
-          <End Type="StudyTogetherModel.Meeting" Role="Meeting" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Lesson">
-              <PropertyRef Name="LessonId" />
-            </Principal>
-            <Dependent Role="Meeting">
-              <PropertyRef Name="LessonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Participant_Meeting">
           <End Type="StudyTogetherModel.Meeting" Role="Meeting" Multiplicity="1" />
           <End Type="StudyTogetherModel.Participant" Role="Participant" Multiplicity="*" />
@@ -476,18 +311,6 @@
             </Principal>
             <Dependent Role="Participant">
               <PropertyRef Name="ProfileId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Profile_User">
-          <End Type="StudyTogetherModel.User" Role="User" Multiplicity="1" />
-          <End Type="StudyTogetherModel.Profile" Role="Profile" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="Profile">
-              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -515,6 +338,39 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Salt" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="HashAlgorithm" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Fullname" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateModified" Type="DateTime" Precision="3" />
+          <Property Name="TokenAuth" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TwoFaEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="RoleId" Type="Int32" Nullable="false" />
+          <Property Name="Active" Type="Boolean" />
+          <NavigationProperty Name="Profile" Relationship="StudyTogetherModel.FK_Profile_User" FromRole="User" ToRole="Profile" />
+          <NavigationProperty Name="Role" Relationship="StudyTogetherModel.FK_User_Role" FromRole="User" ToRole="Role" />
+        </EntityType>
+        <Association Name="FK_Profile_User">
+          <End Type="StudyTogetherModel.User" Role="User" Multiplicity="1" />
+          <End Type="StudyTogetherModel.Profile" Role="Profile" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Profile">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_User_Role">
           <End Type="StudyTogetherModel.Role" Role="Role" Multiplicity="1" />
           <End Type="StudyTogetherModel.User" Role="User" Multiplicity="*" />
@@ -527,38 +383,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Subject_SubjectOrigin">
-          <End Type="StudyTogetherModel.SubjectOrigin" Role="SubjectOrigin" Multiplicity="1" />
-          <End Type="StudyTogetherModel.Subject" Role="Subject" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="SubjectOrigin">
-              <PropertyRef Name="SubjectOriginId" />
-            </Principal>
-            <Dependent Role="Subject">
-              <PropertyRef Name="SubjectId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="StudyTogetherModelStoreContainer" CdmEntityContainer="StudyTogetherEntities">
-          <EntitySetMapping Name="Lesson">
-            <EntityTypeMapping TypeName="StudyTogetherModel.Lesson">
-              <MappingFragment StoreEntitySet="Lesson">
-                <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="LessonId" ColumnName="LessonId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Meeting">
             <EntityTypeMapping TypeName="StudyTogetherModel.Meeting">
               <MappingFragment StoreEntitySet="Meeting">
-                <ScalarProperty Name="LessonId" ColumnName="LessonId" />
                 <ScalarProperty Name="Capacity" ColumnName="Capacity" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="StartsAt" ColumnName="StartsAt" />
@@ -607,23 +440,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Subject">
-            <EntityTypeMapping TypeName="StudyTogetherModel.Subject">
-              <MappingFragment StoreEntitySet="Subject">
-                <ScalarProperty Name="SubjectOriginNameId" ColumnName="SubjectOriginNameId" />
-                <ScalarProperty Name="SubjectName" ColumnName="SubjectName" />
-                <ScalarProperty Name="SubjectId" ColumnName="SubjectId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="SubjectOrigin">
-            <EntityTypeMapping TypeName="StudyTogetherModel.SubjectOrigin">
-              <MappingFragment StoreEntitySet="SubjectOrigin">
-                <ScalarProperty Name="SubjectOriginName" ColumnName="SubjectOriginName" />
-                <ScalarProperty Name="SubjectOriginId" ColumnName="SubjectOriginId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
             <EntityTypeMapping TypeName="StudyTogetherModel.sysdiagrams">
               <MappingFragment StoreEntitySet="sysdiagrams">
@@ -638,6 +454,7 @@
           <EntitySetMapping Name="User">
             <EntityTypeMapping TypeName="StudyTogetherModel.User">
               <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="Active" ColumnName="Active" />
                 <ScalarProperty Name="RoleId" ColumnName="RoleId" />
                 <ScalarProperty Name="TwoFaEnabled" ColumnName="TwoFaEnabled" />
                 <ScalarProperty Name="TokenAuth" ColumnName="TokenAuth" />
@@ -647,7 +464,7 @@
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Fullname" ColumnName="Fullname" />
                 <ScalarProperty Name="HashAlgorithm" ColumnName="HashAlgorithm" />
-                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="Salt" ColumnName="Salt" />
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
