@@ -29,7 +29,6 @@ namespace StudyTogether_backend.Controllers
             {
                 x.ProfileId,
                 x.User.Fullname,
-                x.Picture,
                 x.Description,
             });
 

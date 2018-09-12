@@ -17,10 +17,9 @@ using System.Net.Http.Headers;
 
 namespace StudyTogether_backend.Controllers
 {
-    public class TestController : ApiController
+    public class PictureController : ApiController
     {
         private StudyTogetherEntities db = new StudyTogetherEntities();
-        public List<Korisnik> Korisnici = Korisnik.Napuni();
 
         [HttpGet]
         [JwtAuthentication]
@@ -38,8 +37,6 @@ namespace StudyTogether_backend.Controllers
             };
             result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
             return result;
-
-
         }
 
         // POST api/values
@@ -98,59 +95,5 @@ namespace StudyTogether_backend.Controllers
         {
         }
 
-    }
-
-    public class Korisnik
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-
-        public static List<Korisnik> Napuni()
-        {
-            List<Korisnik> test = new List<Korisnik>();
-            test.Add(new Korisnik
-            {
-                Id = 1,
-                Name = "Milan"
-            });
-
-            test.Add(new Korisnik
-            {
-                Id = 2,
-                Name = "Jovan"
-            });
-
-            test.Add(new Korisnik
-            {
-                Id = 3,
-                Name = "Zoran"
-            });
-
-            test.Add(new Korisnik
-            {
-                Id = 4,
-                Name = "Milica"
-            });
-
-            test.Add(new Korisnik
-            {
-                Id = 5,
-                Name = "Lana"
-            });
-
-            test.Add(new Korisnik
-            {
-                Id = 6,
-                Name = "Marko"
-            });
-
-            test.Add(new Korisnik
-            {
-                Id = 7,
-                Name = "Milenko"
-            });
-
-            return test;
-        }
     }
 }
