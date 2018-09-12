@@ -29,8 +29,11 @@ namespace StudyTogether_backend.Controllers
                 x.StartsAt,
                 x.Description,
                 x.Capacity,
-                CreatedBy = x.Participant.Where(y => y.Owner == true)
+                Owner = x.Participant.Where(y => y.Owner == true)
                                         .Select(y => y.Profile.User.Fullname)
+                                        .FirstOrDefault(),
+                OwnerId = x.Participant.Where(y => y.Owner == true)
+                                        .Select(y => y.ProfileId)
                                         .FirstOrDefault(),
                 Participants = x.Participant.Where(y => y.Owner == false)
                                             .Select(y => y.Profile.User.Fullname)

@@ -222,7 +222,7 @@
             <End Role="Role" EntitySet="Role" />
             <End Role="User" EntitySet="User" />
           </AssociationSet>
-        </EntityContainer>
+          </EntityContainer>
         <EntityType Name="Meeting">
           <Key>
             <PropertyRef Name="MeetingId" />

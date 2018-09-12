@@ -18,7 +18,7 @@
         <EntityTypeShape EntityType="StudyTogetherModel.User" Width="1.5" PointX="3" PointY="1.75" />
         <AssociationConnector Association="StudyTogetherModel.FK_Profile_User" />
         <AssociationConnector Association="StudyTogetherModel.FK_User_Role" />
-      </Diagram>
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

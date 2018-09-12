@@ -39,6 +39,20 @@ namespace StudyTogether_backend.Controllers
             return result;
         }
 
+        [HttpGet]
+        [JwtAuthentication]
+        public HttpResponseMessage Get(int id)
+        {
+            MemoryStream ms = new MemoryStream(db.Profile.Where(x => x.ProfileId == id).Select(x => x.Picture).FirstOrDefault());
+            Image returnImage = Image.FromStream(ms);
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(ms.ToArray())
+            };
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+            return result;
+        }
+
         // POST api/values
         [HttpPost]
         [JwtAuthentication]
