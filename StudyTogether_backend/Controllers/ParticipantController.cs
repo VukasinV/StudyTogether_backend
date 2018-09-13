@@ -112,9 +112,29 @@ namespace StudyTogether_backend.Controllers
             }
 
             db.Participant.Remove(participant);
+
             db.SaveChanges();
 
+            if (LastParticipant(participant))
+                DeleteMeeting(participant);
+
             return Ok("Successfuly deleted!");
+        }
+
+        private void DeleteMeeting(Participant participant)
+        {
+            Meeting meeting = db.Meeting.Find(participant.MeetingId);
+            db.Meeting.Remove(meeting);
+            db.SaveChanges();
+        }
+
+        private bool LastParticipant(Participant participant)
+        {
+            int numberOfParticipants = db.Participant.Count(x => x.MeetingId == participant.MeetingId);
+
+            if (numberOfParticipants == 1)
+                return true;
+            return false;
         }
 
         protected override void Dispose(bool disposing)
