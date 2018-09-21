@@ -22,7 +22,7 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public IHttpActionResult GetParticipant(int id)
         {
-            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+            int userId = JwtManager.GetUserId(Request.Headers.Authorization.Parameter);
 
             int profileId = db.Profile.Where(x => x.UserId == userId)
                                       .Select(x => x.ProfileId)
@@ -82,7 +82,7 @@ namespace StudyTogether_backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+            int userId = JwtManager.GetUserId(Request.Headers.Authorization.Parameter);
             int profileId = db.Profile.Where(x => x.UserId == userId)
                                       .Select(x => x.ProfileId)
                                       .FirstOrDefault();
@@ -102,7 +102,7 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public IHttpActionResult DeleteParticipant(int id)
         {
-            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+            int userId = JwtManager.GetUserId(Request.Headers.Authorization.Parameter);
             int profileId = db.Profile.Where(x => x.UserId == userId).Select(x => x.ProfileId).Single();
 
             Participant participant = db.Participant.Find(profileId, id);

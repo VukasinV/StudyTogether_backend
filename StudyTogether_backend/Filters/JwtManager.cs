@@ -16,7 +16,7 @@ namespace StudyTogether_backend.Filters
         //     var hmac = new HMACSHA256();
         //     var key = Convert.ToBase64String(hmac.Key);
 
-        private static string Secret = ConfigurationManager.AppSettings["HashKey"];
+        private static readonly string Secret = ConfigurationManager.AppSettings["HashKey"];
 
         public static string GenerateToken(int userId, int expireMonths = 3, string role = "user")
         {
@@ -67,7 +67,7 @@ namespace StudyTogether_backend.Filters
             return token;
         }
 
-        public static int generateConfirmationSid()
+        public static int GenerateConfirmationSid()
         {
             Random r = new Random();
 
@@ -107,7 +107,7 @@ namespace StudyTogether_backend.Filters
             }
         }
 
-        public static int getUserId(string token)
+        public static int GetUserId(string token)
         {
             int userId;
 
@@ -130,7 +130,7 @@ namespace StudyTogether_backend.Filters
             return userId;
         }
 
-        public static int getUserConformationCode(string token)
+        public static int GetUserConformationCode(string token)
         {
             int conformationCode;
 

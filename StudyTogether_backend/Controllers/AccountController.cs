@@ -17,7 +17,7 @@ namespace StudyTogether_backend.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public IHttpActionResult PostAccount(HttpRequestMessage message)
+        public IHttpActionResult Login(HttpRequestMessage message)
         {
             if (!CheckHeaders(message, out string responseMessage))
                 return BadRequest(responseMessage);
@@ -25,57 +25,59 @@ namespace StudyTogether_backend.Controllers
             var username = message.Headers.GetValues("username").FirstOrDefault();
             var password = message.Headers.GetValues("password").FirstOrDefault();
 
-            if (VerifyUser(username, password))
+            if (!VerifyUser(username, password))
+                return Unauthorized();
+
+
+            bool sendEmailConformation = db.User.Where(x => x.Username == username)
+                                                .Select(x => x.TwoFaEnabled)
+                                                .FirstOrDefault();
+            if (sendEmailConformation)
             {
-                bool sendEmailConformation = db.User.Where(x => x.Username == username)
-                                                    .Select(x => x.TwoFaEnabled)
-                                                    .FirstOrDefault();
-                if (sendEmailConformation)
-                {
-                    int sid = JwtManager.generateConfirmationSid();
-                    int userId = db.User.Where(x => x.Username == username)
-                                        .Select(x => x.UserId)
-                                        .FirstOrDefault();
+                int sid = JwtManager.GenerateConfirmationSid();
+                int userId = db.User.Where(x => x.Username == username)
+                                    .Select(x => x.UserId)
+                                    .FirstOrDefault();
 
-                    string authToken = JwtManager.GenerateAuthToken(sid);
-
-                    try
-                    {
-                        if (!ModelState.IsValid)
-                        {
-                            return BadRequest(ModelState);
-                        }
-
-                        User user = db.User.Find(userId);
-                        user.TokenAuth = authToken;
-
-                        db.User.Attach(user);
-                        db.Entry(user).Property(x => x.TokenAuth).IsModified = true;
-                        db.SaveChanges();
-
-                    }
-                    catch (Exception exception)
-                    {
-                        throw exception;
-                    }
-
-                    string email = db.User.Where(x => x.UserId == userId)
-                                          .Select(x => x.Email).FirstOrDefault();
-
-                    EmailManager.SendMail(email, $"Your conformation code is: {sid}", "Confirm your identity");
-                    string token = JwtManager.GenerateToken(userId, role: "notUser");
-                    return Created("Created", token);
-
-                }
-                else
-                {
-                    int userId = db.User.Where(x => x.Username == username).Select(x => x.UserId).FirstOrDefault();
-                    string token = JwtManager.GenerateToken(userId);
-                    return Ok(token);
-                }
+                SaveAuthToken(userId, sid);
+                SendMail(userId, sid, out string token);
+                
+                return Created("Created", token);
             }
+            else
+            {
+                int userId = db.User.Where(x => x.Username == username).Select(x => x.UserId).FirstOrDefault();
+                string token = JwtManager.GenerateToken(userId);
+                return Ok(token);
+            }
+        }
 
-            return Unauthorized();
+        private void SendMail(int userId, int sid, out string token)
+        {
+            string email = db.User.Where(x => x.UserId == userId)
+                                      .Select(x => x.Email).FirstOrDefault();
+
+            EmailManager.SendMail(email, $"Your conformation code is: {sid}", "Confirm your identity");
+            token = JwtManager.GenerateToken(userId, role: "notUser");
+        }
+
+        private void SaveAuthToken(int userId, int sid)
+        {
+            string authToken = JwtManager.GenerateAuthToken(sid);
+            try
+            {
+                User user = db.User.Find(userId);
+                user.TokenAuth = authToken;
+
+                db.User.Attach(user);
+                db.Entry(user).Property(x => x.TokenAuth).IsModified = true;
+                db.SaveChanges();
+
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
 
         private bool VerifyUser(string username, string password)

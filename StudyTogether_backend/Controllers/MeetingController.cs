@@ -18,11 +18,11 @@ namespace StudyTogether_backend.Controllers
         private StudyTogetherEntities db = new StudyTogetherEntities();
 
         // GET: api/Meeting
+        [HttpGet]
         [JwtAuthentication]
         public IHttpActionResult GetMeeting()
         {
-
-            var meetings = db.Meeting.Select(x => new
+            var meetings = db.Meeting.Where(x => x.StartsAt > DateTime.Now).Select(x => new
             {
                 x.MeetingId,
                 x.Location,
@@ -38,6 +38,43 @@ namespace StudyTogether_backend.Controllers
                 Participants = x.Participant.Where(y => y.Owner == false)
                                             .Select(y => y.Profile.User.Fullname)
                                             .ToList(),
+            });
+
+            return Ok(meetings);
+        }
+
+        [HttpGet]
+        [JwtAuthentication]
+        public IHttpActionResult GetMeetingsByUser(int id)
+        {
+            var meetings = db.Participant.Where(x => x.ProfileId == id && x.Owner).Select(x => new
+            {
+                x.MeetingId,
+                x.Meeting.Location,
+                x.Meeting.StartsAt,
+                x.Meeting.Description,
+                x.Meeting.Capacity,
+                Participants = db.Participant.Where(y => y.MeetingId == x.MeetingId && !x.Owner).ToList()
+            });
+
+            return Ok(meetings);
+        }
+
+
+        [HttpGet]
+        [JwtAuthentication]
+        [Route("api/mymeetings")]
+        public IHttpActionResult GetMyMeetings()
+        {
+            int id = JwtManager.GetUserId(Request.Headers.Authorization.Parameter);
+            var meetings = db.Participant.Where(x => x.Profile.UserId == id && x.Owner).Select(x => new
+            {
+                x.MeetingId,
+                x.Meeting.Location,
+                x.Meeting.StartsAt,
+                x.Meeting.Description,
+                x.Meeting.Capacity,
+                Participants = db.Participant.Where(y => y.MeetingId == x.MeetingId && !x.Owner).ToList()
             });
 
             return Ok(meetings);
@@ -63,7 +100,7 @@ namespace StudyTogether_backend.Controllers
             db.Meeting.Add(meeting);
             db.SaveChanges();
 
-            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+            int userId = JwtManager.GetUserId(Request.Headers.Authorization.Parameter);
 
             CreateOwner(userId);
 

@@ -17,9 +17,9 @@ namespace StudyTogether_backend.Controllers
         public IHttpActionResult Post(HttpRequestMessage message)
         {
             int sid = Convert.ToInt32(message.Headers.GetValues("conformationCode").FirstOrDefault());
-            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+            int userId = JwtManager.GetUserId(Request.Headers.Authorization.Parameter);
             string authToken = db.User.Where(x => x.UserId == userId).Select(x => x.TokenAuth).FirstOrDefault();
-            int dbConformationSid = JwtManager.getUserConformationCode(authToken);
+            int dbConformationSid = JwtManager.GetUserConformationCode(authToken);
 
             if (sid == dbConformationSid)
             {

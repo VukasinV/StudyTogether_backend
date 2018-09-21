@@ -19,7 +19,7 @@ namespace StudyTogether_backend.Controllers
 
         // GET: api/Profile
         [JwtAuthentication]
-        public IHttpActionResult GetProfile()
+        public IHttpActionResult GetProfiles()
         {
             var profiles = db.Profile.Select(x => new
             {
@@ -39,7 +39,6 @@ namespace StudyTogether_backend.Controllers
             {
                 x.ProfileId,
                 x.User.Fullname,
-                x.Picture,
                 x.Description
             });
 
@@ -65,8 +64,31 @@ namespace StudyTogether_backend.Controllers
             return Ok(profile);
         }
 
+        [JwtAuthentication]
+        [Route("api/myprofile")]
+        public IHttpActionResult GetProfile()
+        {
+            int userid = JwtManager.GetUserId(Request.Headers.Authorization.Parameter);
+            int id = db.Profile.Where(x => x.UserId == userid).Select(x => x.ProfileId).FirstOrDefault();
+
+            if (!db.Profile.Any(x => x.ProfileId == id))
+            {
+                return NotFound();
+            }
+
+            var profile = db.Profile.Where(x => x.ProfileId == id).Select(x => new
+            {
+                x.User.Username,
+                x.User.Fullname,
+                x.Description,
+                x.User.Role.RoleName
+            }).FirstOrDefault();
+
+            return Ok(profile);
+        }
+
         // PUT: api/Profile/5
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof(void))] 
         public IHttpActionResult PutProfile(int id, Profile profile)
         {
             if (!ModelState.IsValid)

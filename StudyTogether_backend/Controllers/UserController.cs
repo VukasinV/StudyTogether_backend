@@ -23,7 +23,7 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public IHttpActionResult GetUser()
         {
-            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+            int userId = JwtManager.GetUserId(Request.Headers.Authorization.Parameter);
 
             var profile = db.Profile.Where(x => x.UserId == userId).Select(x => new
             {

@@ -25,10 +25,8 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public HttpResponseMessage Get()
         {
-            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+            int userId = JwtManager.GetUserId(Request.Headers.Authorization.Parameter);
             int profileId = db.Profile.Where(x => x.UserId == userId).Select(x => x.ProfileId).First();
-
-
             MemoryStream ms = new MemoryStream(db.Profile.Where(x => x.ProfileId == profileId).Select(x => x.Picture).FirstOrDefault());
             Image returnImage = Image.FromStream(ms);
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK)
@@ -58,7 +56,7 @@ namespace StudyTogether_backend.Controllers
         [JwtAuthentication]
         public async Task<IHttpActionResult> Upload()
         {
-            int userId = JwtManager.getUserId(Request.Headers.Authorization.Parameter);
+            int userId = JwtManager.GetUserId(Request.Headers.Authorization.Parameter);
 
             int profileId = db.Profile.Where(x => x.UserId == userId).Select(x => x.ProfileId).FirstOrDefault();
             try

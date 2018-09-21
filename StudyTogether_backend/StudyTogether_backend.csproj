@@ -145,6 +145,7 @@
     <Compile Include="Controllers\ParticipantController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\PictureController.cs" />
+    <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\VerifyAccountController.cs" />
     <Compile Include="Filters\AddChallengeOnUnauthorizedResult.cs" />
